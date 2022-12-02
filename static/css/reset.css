@@ -10,6 +10,7 @@
  */
 body {
     background-color: var(--main-color);
+    font-family: 'Noto Sans KR', sans-serif;;
 }
 
  *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
