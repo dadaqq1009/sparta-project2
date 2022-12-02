@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-        <script>
+    <script>
+//-------------------------------이미지 펑션 추후 수정---------------
         function readImage(input) {
 
             // 인풋 태그에 파일이 있는 경우
@@ -21,36 +22,103 @@
                 reader.readAsDataURL(input.files[0])
             }
         }
+
         // input file에 change 이벤트 부여
         const inputImage = document.getElementById("input-image")
         inputImage.addEventListener("change", e => {
             readImage(e.target)
         })
+//------------------------------------------------------------------
 
-  </script>
+        function save_feed() {
+            let title = $("#title").val();
+            let feed = $("#feed").val();
+
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:5000/write",
+                data: {
+                    "title": title,
+                    "feed": feed
+                },
+                success: function (response) {
+                    alert("정상적으로 등록되었습니다.");
+                    window.location.reload();
+                },
+                error: function () {
+                    alert("등록 중 문제가 발생했습니다.");
+                }
+            })
+        }
+        function get_feeds() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:5000/write",
+                success: function (response) {
+                    let comments = response.feeds;
+
+                    for (let i = 0; i < feeds.length; i++) {
+                        let comment = feeds[i];
+
+                        let temp_html =
+                            `<div class="card mb-1">
+                                <div class="card-body">
+                                    <blockquote class="blockquote mb-0">
+                                        <p>${feed.feed}</p>
+                                        <footer class="blockquote-footer">${feed.name}</footer>
+                                    </blockquote>
+                                </div>
+                            </div>`
+                        $('#feed-list').append(temp_html);
+                    }
+                },
+                error: function () {
+                    alert("게시글 조회 중 문제가 발생했습니다.");
+                }
+            })
+        }
+
+
+    </script>
 </head>
 <body>
 
 <div class="wrap">
 
-    <div class="title" id="title"; style="">
+    <div id="title-form">
+        <div class="form-floating mb-3">
+             <textarea class="form-control" placeholder="제목을 입력하세요" id="title" style="height: 50px; width: 950px"></textarea>
+
+        </div>
+    </div>
+
+    <div class="container" style="display: flex; flex-direction: row;">
+        <div class="form-floating">
+             <textarea class="form-control" placeholder="내용을 입력하세요" id="feed" style="height: 500px; width: 450px"></textarea>
+            </form>
+        </div>
+
+        <div class="image-form">
+            <div class="image-container" id="image">
+                <img style="width: 500px;" id="preview-image"
+                     src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FceEK4H%2FbtrSDF4X7tJ%2FC3avQPxTMXepxFqgROAhr1%2Fimg.png">
+                <input style="display: block;" type="file" id="input-image">
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="button_write_quit">
+        <button onclick="save_feed()" class="btn btn-primary" style="background-color: #f66429">작성하기</button><br>
+        <!save_feed로 앞서 입력한 title,feed, image를 db에 입력>
+        <button onclick="quit_write()"type="button" class="btn btn-outline-primary">나가기</button>
+        <!quit_write=나가기 버튼으로 나가기 기능 구현,이후 버튼 배경색 맞춤>
 
     </div>
 
 
-    <div class="feed" id="feed"; style=float:left;">
-        <textarea name="main_text" rows="20" cols="60"></textarea>
-        <form action="#" method="post">
-            <input style="vertical-align: bottom;" type="submit" name="in" value="작성하기">
-        </form>
-    </div>
-
-    <div class="image" id="image"; style=float:left;">
-        <div class="image-container">
-            <img style="width: 500px;" id="preview-image"
-                 src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FceEK4H%2FbtrSDF4X7tJ%2FC3avQPxTMXepxFqgROAhr1%2Fimg.png">
-            <input style="display: block;" type="file" id="input-image">
-                </div>
-    </div>
 </body>
 </html>
