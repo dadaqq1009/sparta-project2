@@ -1,6 +1,6 @@
 @import url("_variables.css");
 
-#feed_wrap {    
+#container {    
     width: 1460px;
     margin: 30px auto;
 }
