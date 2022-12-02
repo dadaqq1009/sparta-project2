@@ -1,0 +1,15 @@
+@import url("_variables.css");
+
+#container {    
+    width: 1460px;
+    margin: 30px auto;
+}
+
+.feed {
+    width: 22.5%;
+    height: 360px;
+    margin: 15px 1.25%;
+    background-color: var(--sub-color-1);
+    float: left;
+}
+
