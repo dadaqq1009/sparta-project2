@@ -2,7 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial scale=1.0">
+    <!-- https://www.youtube.com/watch?v=EdFV38Bxm3Y 다른 기기라도 동일한 화면을 보이기 위해-->
+    <title>노드4기 2차 프로젝트 게시글 작성 기능 구현</title>
+<!-- 작성 방향성
+    1. 작성자 유저 id, title, feed/article-내용, image/photo-사진,
+       시간을 yy/mm/dd/hh:mm:ss 이상으로 받아서 게시글 id로 만들거나 게시글에
+       id 값을 줘서 수집 (이후 오류나면 안 되니까)
+
+    2. 기능 먼저 구현 → 이미지 올리기 아이콘 위에 추가 하기 아이콘 올리기 구현
+       → 내 서버에 저장해 보기→ css 적용
+
+    3. -->
+
+
 
     <script>
 //-------------------------------이미지 펑션 추후 수정---------------
@@ -31,15 +44,33 @@
 //------------------------------------------------------------------
 
         function save_feed() {
-            let title = $("#title").val();
-            let feed = $("#feed").val();
+            let title = $("#title").val(); // 제목
+            let feed = $("#feed").val();  // 내용
+            let user_id = $("#user_id").val(); // 작성자 아이디
+            let write_time = $("#write_time").val(); // 작성 시간
+            let image = $("#image").val();
+
+            if (title == "") {
+                alert("제목을 입력하세요.");
+                return false
+            } else if (feed == "") {
+                alert("내용을 입력하세요.");
+                return false
+            } else if (image == "") {
+                alert("사진을 추가하세요")
+                return false
+            }
+
 
             $.ajax({
                 type: "POST",
-                url: "http://localhost:5000/write",
+                url: "http://localhost:5000/write", //주소 이후 수정
                 data: {
+                    "user_id": user_id,
                     "title": title,
-                    "feed": feed
+                    "feed": feed,
+                    "image": image,
+                    "write_time": time //(시간 넣는거 나중에 구현,게시물 아이디는 하는 거 보고)
                 },
                 success: function (response) {
                     alert("정상적으로 등록되었습니다.");
@@ -50,33 +81,7 @@
                 }
             })
         }
-        function get_feeds() {
-            $.ajax({
-                type: "GET",
-                url: "http://localhost:5000/write",
-                success: function (response) {
-                    let comments = response.feeds;
 
-                    for (let i = 0; i < feeds.length; i++) {
-                        let comment = feeds[i];
-
-                        let temp_html =
-                            `<div class="card mb-1">
-                                <div class="card-body">
-                                    <blockquote class="blockquote mb-0">
-                                        <p>${feed.feed}</p>
-                                        <footer class="blockquote-footer">${feed.name}</footer>
-                                    </blockquote>
-                                </div>
-                            </div>`
-                        $('#feed-list').append(temp_html);
-                    }
-                },
-                error: function () {
-                    alert("게시글 조회 중 문제가 발생했습니다.");
-                }
-            })
-        }
 
 
     </script>
@@ -87,36 +92,31 @@
 
     <div id="title-form">
         <div class="form-floating mb-3">
-             <textarea class="form-control" placeholder="제목을 입력하세요" id="title" style="height: 50px; width: 950px"></textarea>
-
+             <textarea class="form-control" placeholder="제목을 입력하세요"
+                       id="title" style="height: 50px; width: 950px"></textarea>
         </div>
     </div>
 
     <div class="container" style="display: flex; flex-direction: row;">
         <div class="form-floating">
-             <textarea class="form-control" placeholder="내용을 입력하세요" id="feed" style="height: 500px; width: 450px"></textarea>
-            </form>
+             <textarea class="form-control" placeholder="내용을 입력하세요"
+                       id="feed" style="height: 500px; width: 450px"></textarea>
         </div>
-
         <div class="image-form">
             <div class="image-container" id="image">
                 <img style="width: 500px;" id="preview-image"
                      src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FceEK4H%2FbtrSDF4X7tJ%2FC3avQPxTMXepxFqgROAhr1%2Fimg.png">
                 <input style="display: block;" type="file" id="input-image">
-
+                <!-- 임시로 이미지를 넣었습니다, 이후 와이어프레임대로 구현하려합니다-->
+                <!-- 파일 선택 버튼을 이미지 정중앙에 아이콘으로 구현하려면?-->
             </div>
         </div>
-
-
-
     </div>
-
     <div class="button_write_quit">
-        <button onclick="save_feed()" class="btn btn-primary" style="background-color: #f66429">작성하기</button><br>
-        <!save_feed로 앞서 입력한 title,feed, image를 db에 입력>
-        <button onclick="quit_write()"type="button" class="btn btn-outline-primary">나가기</button>
-        <!quit_write=나가기 버튼으로 나가기 기능 구현,이후 버튼 배경색 맞춤>
-
+        <button onclick="save_feed()" button type="button" >작성하기</button><br>
+        <!--save_feed로 user_id, write_time, 앞서 입력한 title,feed,image를 db에 입력-->
+        <button onclick="quit_write()"type="button">나가기</button>
+        <!--quit_write=나가기 버튼으로 나가기 기능 구현,이후 버튼 배경색 맞춤-->
     </div>
 
 
