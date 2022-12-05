@@ -1,0 +1,133 @@
+from flask import Flask,render_template, request, session, url_for, redirect, flash
+from flask_bcrypt import Bcrypt
+import pymysql, logging
+
+
+app = Flask(__name__)
+app.secret_key = 'abcdefg'
+
+# DEBUG -> INFO -> WARNING -> ERROR -> Critical
+# # 파일로 남기기 위해서는 filename='test.log' 파라미터, 어느 로그까지 남길 것인지를 level 설정 가능하다.
+# logging.basicConfig(filename='test.log', level=logging.ERROR)
+#
+# # 로그를 남길 부분에 다음과 같이 로그 레벨에 맞추어 출력해주면 해당 내용이 파일에 들어감
+# # logging.debug("debug")
+# # logging.info("info")
+# # logging.warning("warning@@@@@@@@@@@@@@@@")
+# logging.error("error############")
+# logging.critical("critical$$$$$$$$$$$$")
+
+
+# handler = logging.FileHandler('flask_error.log') # 메인파일 기준에서 상대경로 (절대경로로 해도 됨)
+# handler.setLevel(logging.WARNING)  # ERROR 일때만 로깅하게 한다
+# app.logger.addHandler(handler) # 핸들러 세팅
+
+# 로그 생성
+logger = logging.getLogger('rogger maramter')
+
+# 로그의 출력 기준 설정
+logger.setLevel(logging.INFO)
+
+# log 출력 형식
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# log 출력
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
+
+# log를 파일에 출력
+file_handler = logging.FileHandler('my.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+##################################
+# bcrypt = Bcrypt(app)
+
+##################################
+
+def connectSql():
+    db = pymysql.connect(host='localhost', port=3306, user='root',
+                     passwd='1234', db='mapaltofu', charset='utf8')
+    return db
+
+@app.route('/')
+def main():
+    if 'login_id' in session:
+        login_id = session['login_id']
+
+        return render_template('main.html', logininfo = login_id)
+    else:
+        login_id = None
+        return render_template('main.html', logininfo = login_id )
+
+@app.route('/login_try')
+def login_try():
+    return render_template("login_try.html")
+
+@app.route('/mypage')
+def mypage():
+    return render_template('mypage.html')
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+
+    if request.method == 'POST':
+        user_id = request.form['login_id']
+        user_pw = request.form['login_pw']
+
+        db = connectSql()
+        cursor = db.cursor()
+
+        sql = "SELECT * FROM user WHERE login_id = %s and pw = %s"
+        value = (user_id, user_pw)
+
+        cursor.execute(sql, value)
+        data = cursor.fetchall()
+        db.close()
+
+        if data:
+            session['login_id'] = user_id
+            return render_template('main.html', logininfo = user_id)
+        else:
+            logger.info(f'login try fail..')
+            return render_template('login_try.html')
+    else:
+        return render_template('login.html')
+    
+@app.route('/logout')
+def logout():
+    session.pop('login_id', None)
+    return redirect(url_for('main'))
+
+@app.route('/register',methods= ['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        user_id = request.form['register_id']
+        user_pw = request.form['register_pw']
+        user_name = request.form['register_name']
+        user_email = request.form['register_email']
+
+        db = connectSql()
+        cursor = db.cursor()
+
+        sql = "select * from user where login_id = %s"
+        value = user_id
+        cursor.execute(sql, value)
+        data = cursor.fetchall()
+
+        if data:
+            return render_template('register.html')
+        else:
+            sql = "insert into user (login_id, pw, name, email) values (%s,%s,%s,%s)"
+            value = (user_id, user_pw, user_name, user_email)
+            cursor.execute(sql, value)
+            cursor.fetchall()
+
+            db.commit()
+            db.close()
+            return render_template('main.html')
+    else:
+        return render_template('register.html')
+
+if __name__ == "__main__":
+    app.run("0.0.0.0", port=5000, debug=True)

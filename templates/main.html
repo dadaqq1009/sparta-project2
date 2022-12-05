@@ -5,6 +5,14 @@
     <title>Title</title>
 </head>
 <body>
+{% if logininfo %}
+{{logininfo}}
+	<a href="/mypage">마이페이지</a>
+	<a href="/logout">로그아웃</a>
+{% else %}
+	<a href="/login">로그인</a>
+	<a href="/register">회원가입</a>
+{% endif %}
 
 </body>
 </html>
