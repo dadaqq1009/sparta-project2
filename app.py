@@ -8,6 +8,7 @@ import json
 
 
 
+
 @app.route('/')
 def mypage():
     return render_template('mypage.html')
@@ -16,12 +17,13 @@ def mypage():
 
 @app.route("/mypage", methods=['GET'])
 def feed_get():
+    db = pymysql.connect(host='localhost', user='root', db='mapaltofu', password='xK7C8r9nJF', charset='utf8')
+    curs = db.cursor()
+
     sql = """
     select * 
-    from post
+    from feed
     """
-    db = pymysql.connect(host='localhost', user='root', db='miniproject2', password='xK7C8r9nJF', charset='utf8')
-    curs = db.cursor()
     curs.execute(sql)
 
     rows = curs.fetchall()

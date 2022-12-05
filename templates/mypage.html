@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 
     <title>Title</title>
+
+
+
+
 
     <style>
     body {
@@ -20,25 +24,90 @@
         margin: 20px 30px;
 
     }
+    img {
+        width: 200px;
+        height: 200px;
+    }
 </style>
 
 </head>
 
 <script>
-    // $(document).ready(function () {
-    //     my_feed();
-    // });
-    //
-    // function my_feed() {
-    //     $.ajax({
-    //         type: 'GET',
-    //         url: '/mypage',
-    //         data: {},
-    //         success: function (response) {
-    //             alert(response['msg'])
-    //         }
-    //     })
-    // }
+
+
+
+    $(document).ready(function () {
+        my_feed();
+    });
+
+    function my_feed() {
+
+        $.ajax({
+            type: 'GET',
+            url: '/mypage',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                for (let i = 0; i < data.length; i++){
+                    let id = data[i][0]
+                    let title = data[i][1]
+                    let description = data[i][2]
+                    let time = data[i][3]
+                    let image = data[i][4]
+
+                    let temp_html =
+                        `
+                         <div class="card mb-3" id="feed-box" onclick="open_feed('${id}','${title}','${description}')">
+                            <img src="${image}" class="card-img-top" alt="image">
+                            <div class="card-body">
+                                <h5 class="card-title">Title: ${title}</h5>
+                                <p class="card-text">${description}</p>
+                                <p class="card-text"><small class="text-muted">Last updated: ${time}</small></p>
+                            </div>
+                         </div>
+                        `
+                    $(`#content`).prepend(temp_html)
+                    console.log(image, title)
+                }
+
+            }})}
+
+    // let selectedId
+
+    function open_feed(id, title, description) {
+        // selectedId = id
+        // $('#nameInput').val(title)
+        // $('#commentInput').val(description)
+
+    $('#section').empty()
+    $('#section').append(temp_html_feed)
+    }
+
+    function close_feed(){
+        window.location.reload()
+    }
+
+    let temp_html_feed = `<div class="mypost" id="">
+                        <div class="mypic">
+                            <h1>Guest Book</h1>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="nameInput" placeholder="url">
+                            <label for="floatingInput">title</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Leave a comment here" id="commentInput" style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">feed</label>
+                        </div>
+
+                        <button onclick="write_book()" type="button" id="Confirmbutton">수정하기</button>
+                        <button onclick="close_feed()" type="button" id="backbutton">Back</button>
+                    </div>
+                    `
+
+
+
+
     // const cd = `
     // <div class="card mb-3" id="feed-box">
     //         <img src="${post[3]}" class="card-img-top" alt="${post[3]}">
@@ -58,47 +127,44 @@
     //     })
     //     .then(function(){});
 
-    const post_tbody = document.querySelector('#posts tbody');
-    let cd =``
-    axios.get('/mypage')
-        .then(function(response){
-            console.log(response);
-            response.data.map((post) => {
-
-                cd += `
-                <div class="card mb-3" id="feed-box">
-                    <img src="${image}" class="card-img-top" alt="${image}">
-                    <div class="card-body">
-                    <h5 class="card-title">${title}</h5>
-                    <p class="card-text">${feed}</p>
-                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                    </div>
-                </div>
-            `
-            })
-                post_tbody.innerHTML = cd
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
-        .then(function(){});
+    // const content = document.querySelector('#content');
+    // let cd =``
+    // axios.get('/mypage')
+    //     .then(function(response){
+    //         console.log(response);
+    //         response.data.map((post) => {
+    //
+    //             cd += `
+    //             <div class="card mb-3" id="feed-box">
+    //                 <img src="${post[3]}" class="card-img-top" alt="${post[3]}">
+    //                 <div class="card-body">
+    //                 <h5 class="card-title">${post[1]}</h5>
+    //                 <p class="card-text">${post[2]}</p>
+    //                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    //                 </div>
+    //             </div>
+    //         `
+    //         })
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     })
+    //     .then(function(){});
 
 
 </script>
 <body>
 
-<section>
+<section id="section">
     <table id="content">
-        <tbody>
         <div class="card mb-3" id="feed-box">
-            <img src="..." class="card-img-top" alt="...">
+            <img src="/static/images/mycat.jpg" class="card-img-top" alt="image">
             <div class="card-body">
-                <h5 class="card-title">${title}</h5>
-                <p class="card-text">${feed}</p>
+                <h5 class="card-title">title</h5>
+                <p class="card-text">feed</p>
                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
             </div>
         </div>
-        </tbody>
     </table>
 </section>
 </body>
