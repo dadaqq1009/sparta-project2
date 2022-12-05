@@ -5,15 +5,22 @@
     <meta name="viewport" content="width=device-width, initial scale=1.0">
     <!-- https://www.youtube.com/watch?v=EdFV38Bxm3Y 다른 기기라도 동일한 화면을 보이기 위해-->
     <title>노드4기 2차 프로젝트 게시글 작성 기능 구현</title>
-<!-- 작성 방향성
-    1. 작성자 유저 id, title, feed/article-내용, image/photo-사진,
+<!-- 1. 작성 방향성
+     작성자 유저 id, title, feed/article-내용, image/photo-사진,
        시간을 yy/mm/dd/hh:mm:ss 이상으로 받아서 게시글 id로 만들거나 게시글에
        id 값을 줘서 수집 (이후 오류나면 안 되니까)
 
-    2. 기능 먼저 구현 → 이미지 올리기 아이콘 위에 추가 하기 아이콘 올리기 구현
+    2. 워크쓰루
+    기능 먼저 구현 → 이미지 올리기 아이콘 위에 추가 하기 아이콘 올리기 구현
        → 내 서버에 저장해 보기→ css 적용
 
-    3. -->
+    3. 의문점
+    user_id와 time을 같이 post 하는 방법은?
+        time은 sql에서 처리하면 될지도?
+
+    4. 최신 진행상황
+    1205 10:38 중복되었던 feed와 description 분리함
+    -->
 
 
 
@@ -45,15 +52,15 @@
 
         function save_feed() {
             let title = $("#title").val(); // 제목
-            let feed = $("#feed").val();  // 내용
+            let description = $("#description").val();  // 내용
             let user_id = $("#user_id").val(); // 작성자 아이디
             let write_time = $("#write_time").val(); // 작성 시간
-            let image = $("#image").val();
+            let image = $("#image").val();//이미지
 
             if (title == "") {
                 alert("제목을 입력하세요.");
                 return false
-            } else if (feed == "") {
+            } else if (description == "") {
                 alert("내용을 입력하세요.");
                 return false
             } else if (image == "") {
@@ -68,7 +75,7 @@
                 data: {
                     "user_id": user_id,
                     "title": title,
-                    "feed": feed,
+                    "description": description,
                     "image": image,
                     "write_time": time //(시간 넣는거 나중에 구현,게시물 아이디는 하는 거 보고)
                 },
@@ -100,7 +107,7 @@
     <div class="container" style="display: flex; flex-direction: row;">
         <div class="form-floating">
              <textarea class="form-control" placeholder="내용을 입력하세요"
-                       id="feed" style="height: 500px; width: 450px"></textarea>
+                       id="description" style="height: 500px; width: 450px"></textarea>
         </div>
         <div class="image-form">
             <div class="image-container" id="image">
@@ -115,8 +122,9 @@
     <div class="button_write_quit">
         <button onclick="save_feed()" button type="button" >작성하기</button><br>
         <!--save_feed로 user_id, write_time, 앞서 입력한 title,feed,image를 db에 입력-->
-        <button onclick="quit_write()"type="button">나가기</button>
-        <!--quit_write=나가기 버튼으로 나가기 기능 구현,이후 버튼 배경색 맞춤-->
+        <button onclick="window.history.back()"type="button">나가기</button>
+        <!--window.history.back()=뒤로가기 버튼으로 나가기 기능 구현,이후 버튼 배경색 맞춤
+        https://codingbroker.tistory.com/73 -->
     </div>
 
 
