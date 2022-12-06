@@ -30,24 +30,24 @@ def get_feed():
     return json_str, 200
 
 
-# 로그 생성
-logger = logging.getLogger('loggin msg')
-
-# 로그의 출력 기준 설정
-logger.setLevel(logging.INFO)
-
-# log 출력 형식
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-# log 출력
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-logger.addHandler(stream_handler)
-
-# log를 파일에 출력
-file_handler = logging.FileHandler('my.log')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+# # 로그 생성
+# logger = logging.getLogger('loggin msg')
+#
+# # 로그의 출력 기준 설정
+# logger.setLevel(logging.INFO)
+#
+# # log 출력 형식
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#
+# # log 출력
+# stream_handler = logging.StreamHandler()
+# stream_handler.setFormatter(formatter)
+# logger.addHandler(stream_handler)
+#
+# # log를 파일에 출력
+# file_handler = logging.FileHandler('my.log')
+# file_handler.setFormatter(formatter)
+# logger.addHandler(file_handler)
 
 ##################################
 bcrypt = Bcrypt(app)
@@ -92,7 +92,7 @@ def login():
             session['login_id'] = user_id
             return render_template('main.html', logininfo=user_id)
         else:
-            logger.info(f'login try fail..')
+            # logger.info(f'login try fail..')
             return render_template('login_error.html')
     else:
         return render_template('login.html')
@@ -185,6 +185,12 @@ def feed_get():
     db.commit()
     # db.close()
     return json_str, 200
+
+@app.route("/modify", methods=['GET','PUT','DELETE'])
+def modify_feed():
+
+
+    return render_template('modify.html')
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
