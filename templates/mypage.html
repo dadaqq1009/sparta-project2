@@ -44,7 +44,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '/mypage',
+            url: `/api/mypages`,
             data: {},
             dataType: 'json',
             success: function (data) {
@@ -53,57 +53,71 @@
                     let title = data[i][1]
                     let description = data[i][2]
                     let time = data[i][3]
-                    let image = data[i][4]
+                    let image = data[i][4].substring(1)
 
                     let temp_html =
                         `
-                         <div class="card mb-3" id="feed-box" onclick="open_feed('${id}','${title}','${description}')">
-                            <img src="${image}" class="card-img-top" alt="image">
+                         <div class="card mb-3" id="feed-box" onclick="open_feed('${id}','${title}','${description}', '${time}')">
+                            <img src= ${image} class="card-img-top" alt="image">
                             <div class="card-body">
-                                <h5 class="card-title">Title: ${title}</h5>
-                                <p class="card-text">${description}</p>
+                                <h5 class="card-title" id="feedTitle">Title: ${title}</h5>
+                                <p class="card-text" id="feedText">${description}</p>
                                 <p class="card-text"><small class="text-muted">Last updated: ${time}</small></p>
                             </div>
                          </div>
                         `
                     $(`#content`).prepend(temp_html)
-                    console.log(image, title)
+                    console.log(image)
+
                 }
 
             }})}
 
-    // let selectedId
 
-    function open_feed(id, title, description) {
-        // selectedId = id
-        // $('#nameInput').val(title)
-        // $('#commentInput').val(description)
+    function open_feed(id, title, description, time) {
+        $('#section').empty()
+        $('#section').append(temp_html_feed)
+        document.getElementById('cardTitle').innerText += title
+        document.getElementById('cardText').innerText += description
+        document.getElementById('cardTime').innerText += time
 
-    $('#section').empty()
-    $('#section').append(temp_html_feed)
+
     }
+
 
     function close_feed(){
         window.location.reload()
     }
 
-    let temp_html_feed = `<div class="mypost" id="">
-                        <div class="mypic">
-                            <h1>Guest Book</h1>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="nameInput" placeholder="url">
-                            <label for="floatingInput">title</label>
-                        </div>
-                        <div class="form-floating">
-                            <textarea class="form-control" placeholder="Leave a comment here" id="commentInput" style="height: 100px"></textarea>
-                            <label for="floatingTextarea2">feed</label>
-                        </div>
+    let temp_html_feed = `
+                         <div class="card mb-3" id="feed-box">
+                            <img src="..." class="card-img-top" alt="image">
+                            <div class="card-body">
+                                <h5 class="card-title" id="cardTitle"></h5>
+                                <p class="card-text" id="cardText"></p>
+                                <p class="card-text"><small class="text-muted" id="cardTime"></small></p>
+                                <button onclick="close_feed()" type="button" id="backbutton">Back</button>
+                            </div>
+                         </div>
 
-                        <button onclick="write_book()" type="button" id="Confirmbutton">수정하기</button>
-                        <button onclick="close_feed()" type="button" id="backbutton">Back</button>
-                    </div>
+
                     `
+    $(document).ready(function () {
+        feed_detail();
+    });
+
+    function feed_detail() {
+
+        $.ajax({
+            type: 'GET',
+            url: `/api/mypages/detail`,
+            data: {},
+            dataType: 'json',
+            success: function (response) {
+                console.log(response)
+
+            }})}
+
 
 
 
@@ -158,10 +172,12 @@
 <section id="section">
     <table id="content">
         <div class="card mb-3" id="feed-box">
-            <img src="/static/images/mycat.jpg" class="card-img-top" alt="image">
+            <img src=" /static/images/mycat.jpg" class="card-img-top" alt="image">
             <div class="card-body">
                 <h5 class="card-title">title</h5>
-                <p class="card-text">feed</p>
+                {% for value in feed_list %}
+                <p class="card-text">{{value}}</p>
+                {% endfor %}
                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
             </div>
         </div>
