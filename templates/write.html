@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>write page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li>접속자 : <strong>{{logininfo}}</strong> 님</li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">새 글 작성</h3>
+        </div>
+        <section>
+            <form class="form-horizontal" method="post" action="/write">
+                <fieldset>
+                <!-- 헤더 -->
+                    <legend>여긴 제목이야</legend>
+                <!--제목-->
+                    <div class="form-group">
+                        <label class="col-md-12" for="txtTitle">Title </label>
+                        <div class="col-md-12">
+                            <input id="txtTitle" name="title" type="text" placeholder="제목을 입력하세요." class="form-control input-md", autofocus required><!--required : 공백입력시 경고-->
+                        </div>
+                    </div>
+                <!-- Textarea -->
+                    <div class="form-group">
+                        <label class="col-md-12" for="txtPost">Post</label>
+                        <div class="col-md-12">
+                            <textarea class="form-control" id="txtPost" name="description" placeholder="내용을 입력하세요." style="height:260px;" required></textarea>
+                        </div>
+                    </div>
+                <!-- Button -->
+                    <div class="form-group">
+                        <label class="col-md-12 control-label" for="singlebutton"></label>
+                        <div class="col-md-12">
+                            <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="작성하기">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+    </div>
 </body>
 </html>

@@ -41,19 +41,12 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 ##################################
-# bcrypt = Bcrypt(app)
-
+bcrypt = Bcrypt(app)
 ##################################
 
 
-# def connectSql():
-#     db = pymysql.connect(host='localhost', port=3306, user='root',
-#                          passwd='1234', db='mapaltofu', charset='utf8')
-#     return db
-
 db = pymysql.connect(host='localhost', port=3306, user='root',
                      passwd='1234', db='mapaltofu', charset='utf8')
-
 
 @app.route('/')
 def main():
@@ -65,15 +58,11 @@ def main():
         user_id = None
         return render_template('main.html', logininfo=user_id)
 
-
-@app.route('/login_try')
-def login_try():
-    return render_template("login_try.html")
-
-
 @app.route('/mypage')
 def mypage():
-    return render_template('mypage.html')
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('mypage.html', logininfo=user_id)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -84,12 +73,11 @@ def login():
 
         cursor = db.cursor()
 
-        sql = "SELECT * FROM user WHERE login_id = %s and pw = %s"
+        sql = "SELECT * FROM `user` WHERE login_id = %s and pw = %s"
         value = (user_id, user_pw)
 
         cursor.execute(sql, value)
         data = cursor.fetchall()
-        db.close()
 
         if data:
             session['login_id'] = user_id
@@ -106,7 +94,6 @@ def logout():
     session.pop('login_id', None)
     return redirect(url_for('main'))
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -117,27 +104,28 @@ def register():
 
         cursor = db.cursor()
 
-        sql = "select * from user where login_id = %s"
-        value = user_id
+        sql = "select * from `user` where login_id = %s or email = %s"
+        value = (user_id, user_email)
         cursor.execute(sql, value)
-        data = cursor.fetchall()
+        data = (cursor.fetchall())
+
+
 
         if data:
-            return render_template('register.html')
+            return render_template('login_error.html')
         else:
-            sql = "insert into user (login_id, pw, name, email) values (%s,%s,%s,%s)"
+            sql = "insert into `user` (login_id, pw, name, email) values (%s,%s,%s,%s)"
             value = (user_id, user_pw, user_name, user_email)
             cursor.execute(sql, value)
+            # bcrypt.generate_password_hash(user_pw)
             cursor.fetchall()
-
             db.commit()
-            db.close()
+            # db.close()
             return render_template('main.html')
     else:
         return render_template('register.html')
 
 @app.route('/user_edit', methods=['GET', 'POST'])
-            # 회원정보 업데이트 공사중 입니다
 def user_edit():
     if request.method == 'POST':
         if 'login_id' in session:
@@ -148,19 +136,23 @@ def user_edit():
             edit_email = request.form['edit_email']
 
             cursor = db.cursor()
-            sql = "update user set name = %s, pw = %s, email = %s"
-            value = (edit_name, edit_pw, edit_email)
+            sql = "update `user` set name = %s, pw = %s, email = %s where login_id = %s"
+            value = (edit_name, edit_pw, edit_email, login_id)
             cursor.execute(sql, value)
 
             session['login_id'] = login_id
 
             db.commit()
-            db.close()
-            return render_template('main.html', logininfo=login_id )
+            # db.close()
+            return render_template('edit_success.html', logininfo=login_id )
         else:
-            return render_template('user_edit.html')
+            return render_template('login_error.html')
     else:
         return render_template('user_edit.html')
+
+@app.route('/edit_success')
+def edit_success():
+    return render_template('edit_success.html')
 
 if __name__ == "__main__":
     app.run("0.0.0.0", port=5000, debug=True)
