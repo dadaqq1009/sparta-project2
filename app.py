@@ -167,7 +167,6 @@ def user_edit():
 
 @app.route("/api/mypages", methods=['GET'])
 def feed_get():
-    db = pymysql.connect(host='localhost', user='root', db='mapaltofu', password='xK7C8r9nJF', charset='utf8')
     curs = db.cursor()
 
     # 여기 foreign key 방식으로 다시 써야됨!!!!
