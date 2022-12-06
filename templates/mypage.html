@@ -6,5 +6,186 @@
 </head>
 <body>
 {{logininfo}}
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <title>mypages</title>
+
+
+
+
+
+    <style>
+    body {
+        background-color: #495057;
+        background-position: center;
+        background-size: auto;
+    }
+
+    .card {
+        margin: 20px 30px;
+
+    }
+    img {
+        width: 200px;
+        height: 200px;
+    }
+</style>
+
+</head>
+
+<script>
+
+
+
+    $(document).ready(function () {
+        my_feed();
+    });
+
+    function my_feed() {
+
+        $.ajax({
+            type: 'GET',
+            url: `/api/mypages`,
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                for (let i = 0; i < data.length; i++){
+                    let id = data[i][0]
+                    let title = data[i][1]
+                    let description = data[i][2]
+                    let time = data[i][3]
+                    let image = data[i][4].substring(1)
+
+                    let temp_html =
+                        `
+                         <div class="card mb-3" id="feed-box" onclick="open_feed('${id}','${title}','${description}', '${time}')">
+                            <img src= ${image} class="card-img-top" alt="image">
+                            <div class="card-body">
+                                <h5 class="card-title" id="feedTitle">Title: ${title}</h5>
+                                <p class="card-text" id="feedText">${description}</p>
+                                <p class="card-text"><small class="text-muted">Last updated: ${time}</small></p>
+                            </div>
+                         </div>
+                        `
+                    $(`#content`).prepend(temp_html)
+                    console.log(image)
+
+                }
+
+            }})}
+
+
+    function open_feed(id, title, description, time) {
+        $('#section').empty()
+        $('#section').append(temp_html_feed)
+        document.getElementById('cardTitle').innerText += title
+        document.getElementById('cardText').innerText += description
+        document.getElementById('cardTime').innerText += time
+
+
+    }
+
+
+    function close_feed(){
+        window.location.reload()
+    }
+
+    let temp_html_feed = `
+                         <div class="card mb-3" id="feed-box">
+                            <img src="..." class="card-img-top" alt="image">
+                            <div class="card-body">
+                                <h5 class="card-title" id="cardTitle"></h5>
+                                <p class="card-text" id="cardText"></p>
+                                <p class="card-text"><small class="text-muted" id="cardTime"></small></p>
+                                <button onclick="close_feed()" type="button" id="backbutton">Back</button>
+                            </div>
+                         </div>
+
+
+                    `
+    $(document).ready(function () {
+        feed_detail();
+    });
+
+    function feed_detail() {
+
+        $.ajax({
+            type: 'GET',
+            url: `/api/mypages/detail`,
+            data: {},
+            dataType: 'json',
+            success: function (response) {
+                console.log(response)
+
+            }})}
+
+
+
+
+
+    // const cd = `
+    // <div class="card mb-3" id="feed-box">
+    //         <img src="${post[3]}" class="card-img-top" alt="${post[3]}">
+    //         <div class="card-body">
+    //             <h5 class="card-title">${post[1]}</h5>
+    //             <p class="card-text">${post[2]}</p>
+    //             <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    //         </div>
+    //     </div>
+    // `
+    // axios.get('/mypage')
+    //     .then(function(response) {
+    //         console.log(response);
+    //     })
+    //     .cath(function(error){
+    //         console.log(error);
+    //     })
+    //     .then(function(){});
+
+    // const content = document.querySelector('#content');
+    // let cd =``
+    // axios.get('/mypage')
+    //     .then(function(response){
+    //         console.log(response);
+    //         response.data.map((post) => {
+    //
+    //             cd += `
+    //             <div class="card mb-3" id="feed-box">
+    //                 <img src="${post[3]}" class="card-img-top" alt="${post[3]}">
+    //                 <div class="card-body">
+    //                 <h5 class="card-title">${post[1]}</h5>
+    //                 <p class="card-text">${post[2]}</p>
+    //                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    //                 </div>
+    //             </div>
+    //         `
+    //         })
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     })
+    //     .then(function(){});
+
+
+</script>
+<body>
+<section id="section">
+    <table id="content">
+        <div class="card mb-3" id="feed-box">
+            <img src=" /static/images/mycat.jpg" class="card-img-top" alt="image">
+            <div class="card-body">
+                <h5 class="card-title">title</h5>
+                {% for value in feed_list %}
+                <p class="card-text">{{value}}</p>
+                {% endfor %}
+                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+        </div>
+    </table>
+</section>
+</body>
 </body>
 </html>
