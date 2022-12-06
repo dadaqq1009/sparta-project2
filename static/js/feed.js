@@ -1,3 +1,7 @@
+$(document).ready(function () {
+    get_feed();
+});
+
 window.onscroll = function(ev) {
     let temp_html = `<article class="feed"></article>`
     const {scrollTop, scrollHeight, clientHeight} = document.documentElement
@@ -8,27 +12,34 @@ window.onscroll = function(ev) {
 
 function get_feed() {
     $.ajax({
-        type: "POST",
+        type: "GET",
         url: "/feed",
         data: {},
-        success: function (response) {
-            let rows = response['guests']
-            for (let i = 0; i < rows.length; i++) {
-                let cnt = rows[i]['cnt']
-                let guestName = rows[i]['guestName']
-                let guestMbti = rows[i]['guestMbti']
-                let guestComment = rows[i]['guestComment']
+        dataType: 'json',
+        success: function (data) {
+            for (let i = 0; i < data.length; i++) {
+                let id = data[i][0]
+                let title = data[i][1]
+                let description = data[i][2]
+                let created_at = data[i][3]
+                let image = data[i][4].substring(1)
+                let user_id = data[i][7]
 
-                let temp_html = `<div class="card">
-                                    <figcaption class="blockquote-footer">
-                                        ${guestMbti}<cite title="Source Title">${guestName}</cite>
-                                    </figcaption>
-                                    <blockquote class="blockquote">
-                                        <p>${guestComment}</p>
-                                    </blockquote>
-                                    <button onclick="teamdelete_comment(${cnt})" type="button" class="btn del_btn btn-dark">삭제하기</button>             
-                                </div>`
-                $('#comm-list').append(temp_html)
+
+                let temp_html = `<article class="feed">
+                                  <img src=${image} alt="" />
+                                  <div class="feed_text_wrap">
+                                    <h4 class="feed_title">${title}</h4>
+                                    <p class="feed_descript">
+                                      ${description}
+                                    </p>
+                                  </div>
+                                  <div class="feed_user">
+                                    <p class="feed_user_id">${user_id}<span>${created_at}</span></p>
+                                  </div>
+                                </article>`
+                $('#container').prepend(temp_html)
+                console.log(user_id)
             }
         }
     });

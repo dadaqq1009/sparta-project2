@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 디폴트 무시된 파일
 /shelf/
 /workspace.xml
@@ -6,3 +7,9 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+=======
+.DS_Store
+/__pycache__
+venv
+.idea
+>>>>>>> master
