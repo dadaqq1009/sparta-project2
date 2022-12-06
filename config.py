@@ -1,27 +1,14 @@
-import pymysql
+db = {
+    # 데이터베이스에 접속할 사용자 아이디
+    'user': 'root',
+    # 사용자 비밀번호
+    'password': 'xK7C8r9nJF',
+    # 접속할 데이터베이스의 주소 (같은 컴퓨터에 있는 데이터베이스에 접속하기 때문에 localhost)
+    'host': 'localhost',
+    # 관계형 데이터베이스는 주로 3306 포트를 통해 연결됨
+    'port': 3306,
+    # 실제 사용할 데이터베이스 이름
+    'database': 'mapaltofu'
+}
 
-
-# db = pymysql.connect(host = 'localhost',
-#                      port = 3306,
-#                      user = 'root',
-#                      passwd = 'Guswl1219',
-#                      db = 'mapaltofu',
-#                      charset = 'utf8')
-#
-# cursor = db.cursor(pymysql.cursors.DictCursor)
-#
-# # pymysql.cursors.DictCursor
-#
-# cursor.execute('use mapaltofu;') # excute합수# 를 사용해 명령을 내림 / db 접근
-# # cursor.execute('insert into mapaltofu (id, name) values ("0", "한정훈")')
-# # cursor.execute('update mapaltofu set name="마팔두부" where name="한정훈"')
-# # cursor.execute('delete from mapaltofu where name="한정훈"')
-# # cursor.execute('insert into mapaltofu (id, name) values ("0", "한정훈")')
-#
-# cursor.execute('select * from feed f;')
-# value = cursor.fetchall()
-# # print([value])
-# print([value[0]['title']])
-# # 마지막에 이게 꼭 나와야함
-# db.commit()
-# db.close()
+DB_URL = f"mysql+mysqlconnector://{db['user']}:{db['password']}@{db['host']}:{db['port']}/{db['database']}?charset=utf8"
