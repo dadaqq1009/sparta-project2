@@ -1,6 +1,12 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
+<<<<<<< HEAD
 # from flask_bcrypt import Bcrypt
 import pymysql, logging, json
+=======
+from flask_bcrypt import Bcrypt
+import pymysql, logging
+import json
+>>>>>>> master
 
 app = Flask(__name__)
 app.secret_key = 'abcdefg'
@@ -199,6 +205,36 @@ def user_edit():
     else:
         return render_template('user_edit.html')
 
+<<<<<<< HEAD
 if __name__ == "__main__":
     app.run("0.0.0.0", port=5000, debug=True)
+=======
+
+
+@app.route("/api/mypages", methods=['GET'])
+def feed_get():
+    curs = db.cursor()
+
+    # 여기 foreign key 방식으로 다시 써야됨!!!!
+    sql = """
+    select * 
+    from feed as f
+    LEFT JOIN `user` as u
+    ON f.user_id = u.id
+    """
+    curs.execute(sql)
+    rows = curs.fetchall()
+
+
+    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+    db.commit()
+    db.close()
+    return json_str, 200
+
+
+
+
+if __name__ == '__main__':
+    app.run('0.0.0.0', port=5000, debug=True)
+>>>>>>> master
 
