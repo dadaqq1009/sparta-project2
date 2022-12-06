@@ -10,5 +10,12 @@
 .DS_Store
 /__pycache__
 venv
+# IntelliJ project files
 .idea
-.log
+.idea/*.xml
+*.iml
+out
+gen
+build
+rebel.xml
+
