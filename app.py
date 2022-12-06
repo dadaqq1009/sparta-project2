@@ -11,7 +11,7 @@ app.secret_key = 'abcdefg'
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
-                     passwd = 'Guswl1219',
+                     passwd = '1234',
                      db = 'mapaltofu',
                      charset = 'utf8')
 
@@ -25,38 +25,10 @@ def get_feed():
     """
     cursor.execute(sql)
     rows = cursor.fetchall() # 피드에있는 데이터를 다 가져온다
-    print(rows)
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str) # json포맷으로 변환
     db.commit()
     return json_str, 200
 
-#     print('get_feed')
-#     title_receive = request.args.get('title_give')
-#     return jsonify({'result':'success', 'msg': '이 요청은 GET!'})
-# cursor.execute('select * from feed;')
-# value = cursor.fetchall()
-# print([value[3]['image']])
-
-# # print([value[0]['title']])
-# # # 마지막에 이게 꼭 나와야함
-
-
-
-# DEBUG -> INFO -> WARNING -> ERROR -> Critical
-# # 파일로 남기기 위해서는 filename='test.log' 파라미터, 어느 로그까지 남길 것인지를 level 설정 가능하다.
-# logging.basicConfig(filename='test.log', level=logging.ERROR)
-#
-# # 로그를 남길 부분에 다음과 같이 로그 레벨에 맞추어 출력해주면 해당 내용이 파일에 들어감
-# # logging.debug("debug")
-# # logging.info("info")
-# # logging.warning("warning@@@@@@@@@@@@@@@@")
-# logging.error("error############")
-# logging.critical("critical$$$$$$$$$$$$")
-
-
-# handler = logging.FileHandler('flask_error.log') # 메인파일 기준에서 상대경로 (절대경로로 해도 됨)
-# handler.setLevel(logging.WARNING)  # ERROR 일때만 로깅하게 한다
-# app.logger.addHandler(handler) # 핸들러 세팅
 
 # 로그 생성
 logger = logging.getLogger('loggin msg')
@@ -78,19 +50,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 ##################################
-# bcrypt = Bcrypt(app)
-
+bcrypt = Bcrypt(app)
 ##################################
-
-
-# def connectSql():
-#     db = pymysql.connect(host='localhost', port=3306, user='root',
-#                          passwd='1234', db='mapaltofu', charset='utf8')
-#     return db
-
-# db = pymysql.connect(host='localhost', port=3306, user='root',
-#                      passwd='1234', db='mapaltofu', charset='utf8')
-
 
 @app.route('/')
 def main():
@@ -102,15 +63,11 @@ def main():
         user_id = None
         return render_template('main.html', logininfo=user_id)
 
-
-@app.route('/login_try')
-def login_try():
-    return render_template("login_try.html")
-
-
 @app.route('/mypage')
 def mypage():
-    return render_template('mypage.html')
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('mypage.html', logininfo=user_id)
 
 @app.route('/write')
 def write():
@@ -130,7 +87,6 @@ def login():
 
         cursor.execute(sql, value)
         data = cursor.fetchall()
-        # db.close()
 
         if data:
             session['login_id'] = user_id
@@ -147,7 +103,6 @@ def logout():
     session.pop('login_id', None)
     return redirect(url_for('main'))
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -158,19 +113,21 @@ def register():
 
         cursor = db.cursor()
 
-        sql = "select * from `user` where login_id = %s"
-        value = user_id
+        sql = "select * from `user` where login_id = %s or email = %s"
+        value = (user_id, user_email)
         cursor.execute(sql, value)
-        data = cursor.fetchall()
+        data = (cursor.fetchall())
+
+
 
         if data:
-            return render_template('register.html')
+            return render_template('login_error.html')
         else:
             sql = "insert into `user` (login_id, pw, name, email) values (%s,%s,%s,%s)"
             value = (user_id, user_pw, user_name, user_email)
             cursor.execute(sql, value)
+            # bcrypt.generate_password_hash(user_pw)
             cursor.fetchall()
-
             db.commit()
             # db.close()
             return render_template('main.html')
@@ -178,7 +135,6 @@ def register():
         return render_template('register.html')
 
 @app.route('/user_edit', methods=['GET', 'POST'])
-            # 회원정보 업데이트 공사중 입니다
 def user_edit():
     if request.method == 'POST':
         if 'login_id' in session:
@@ -189,25 +145,31 @@ def user_edit():
             edit_email = request.form['edit_email']
 
             cursor = db.cursor()
-            sql = "update `user` set name = %s, pw = %s, email = %s"
-            value = (edit_name, edit_pw, edit_email)
+            sql = "update `user` set name = %s, pw = %s, email = %s where login_id = %s"
+            value = (edit_name, edit_pw, edit_email, login_id)
+
+            # sql = "update `user` set name = %s, pw = %s, email = %s"
+            # value = (edit_name, edit_pw, edit_email)
             cursor.execute(sql, value)
 
             session['login_id'] = login_id
 
             db.commit()
-            return render_template('main.html', logininfo=login_id )
+            # db.close()
+            return render_template('edit_success.html', logininfo=login_id )
         else:
-            return render_template('user_edit.html')
+            return render_template('login_error.html')
     else:
         return render_template('user_edit.html')
 
+@app.route('/edit_success')
+def edit_success():
+    return render_template('edit_success.html')
 
 
 @app.route("/api/mypages", methods=['GET'])
 def feed_get():
     # curs = db.cursor()
-
     # 여기 foreign key 방식으로 다시 써야됨!!!!
     sql = """
     select * 
@@ -223,9 +185,6 @@ def feed_get():
     db.commit()
     # db.close()
     return json_str, 200
-
-
-
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
