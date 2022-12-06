@@ -1,10 +1,46 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
+# from flask_bcrypt import Bcrypt
+import pymysql, logging, json
+
 from flask_bcrypt import Bcrypt
-import pymysql, logging
-import json
+
 
 app = Flask(__name__)
 app.secret_key = 'abcdefg'
+
+db = pymysql.connect(host = 'localhost',
+                     port = 3306,
+                     user = 'root',
+                     passwd = 'Guswl1219',
+                     db = 'mapaltofu',
+                     charset = 'utf8')
+
+# cursor = db.cursor(pymysql.cursors.DictCursor)
+cursor = db.cursor()
+
+@app.route('/feed', methods=['GET'])
+def get_feed():
+    sql = """
+    select * from feed as f left join `user` as u on f.user_id = u.id
+    """
+    cursor.execute(sql)
+    rows = cursor.fetchall() # 피드에있는 데이터를 다 가져온다
+    print(rows)
+    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str) # json포맷으로 변환
+    db.commit()
+    return json_str, 200
+
+#     print('get_feed')
+#     title_receive = request.args.get('title_give')
+#     return jsonify({'result':'success', 'msg': '이 요청은 GET!'})
+# cursor.execute('select * from feed;')
+# value = cursor.fetchall()
+# print([value[3]['image']])
+
+# # print([value[0]['title']])
+# # # 마지막에 이게 꼭 나와야함
+
+
 
 # DEBUG -> INFO -> WARNING -> ERROR -> Critical
 # # 파일로 남기기 위해서는 filename='test.log' 파라미터, 어느 로그까지 남길 것인지를 level 설정 가능하다.
@@ -52,8 +88,8 @@ logger.addHandler(file_handler)
 #                          passwd='1234', db='mapaltofu', charset='utf8')
 #     return db
 
-db = pymysql.connect(host='localhost', port=3306, user='root',
-                     passwd='1234', db='mapaltofu', charset='utf8')
+# db = pymysql.connect(host='localhost', port=3306, user='root',
+#                      passwd='1234', db='mapaltofu', charset='utf8')
 
 
 @app.route('/')
@@ -76,6 +112,10 @@ def login_try():
 def mypage():
     return render_template('mypage.html')
 
+@app.route('/write')
+def write():
+    return render_template('write.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -85,12 +125,12 @@ def login():
 
         cursor = db.cursor()
 
-        sql = "SELECT * FROM user WHERE login_id = %s and pw = %s"
+        sql = "SELECT * FROM `user` WHERE login_id = %s and pw = %s"
         value = (user_id, user_pw)
 
         cursor.execute(sql, value)
         data = cursor.fetchall()
-        db.close()
+        # db.close()
 
         if data:
             session['login_id'] = user_id
@@ -118,7 +158,7 @@ def register():
 
         cursor = db.cursor()
 
-        sql = "select * from user where login_id = %s"
+        sql = "select * from `user` where login_id = %s"
         value = user_id
         cursor.execute(sql, value)
         data = cursor.fetchall()
@@ -126,13 +166,13 @@ def register():
         if data:
             return render_template('register.html')
         else:
-            sql = "insert into user (login_id, pw, name, email) values (%s,%s,%s,%s)"
+            sql = "insert into `user` (login_id, pw, name, email) values (%s,%s,%s,%s)"
             value = (user_id, user_pw, user_name, user_email)
             cursor.execute(sql, value)
             cursor.fetchall()
 
             db.commit()
-            db.close()
+            # db.close()
             return render_template('main.html')
     else:
         return render_template('register.html')
@@ -149,14 +189,13 @@ def user_edit():
             edit_email = request.form['edit_email']
 
             cursor = db.cursor()
-            sql = "update user set name = %s, pw = %s, email = %s"
+            sql = "update `user` set name = %s, pw = %s, email = %s"
             value = (edit_name, edit_pw, edit_email)
             cursor.execute(sql, value)
 
             session['login_id'] = login_id
 
             db.commit()
-            db.close()
             return render_template('main.html', logininfo=login_id )
         else:
             return render_template('user_edit.html')
@@ -167,7 +206,7 @@ def user_edit():
 
 @app.route("/api/mypages", methods=['GET'])
 def feed_get():
-    curs = db.cursor()
+    # curs = db.cursor()
 
     # 여기 foreign key 방식으로 다시 써야됨!!!!
     sql = """
@@ -176,13 +215,13 @@ def feed_get():
     LEFT JOIN `user` as u
     ON f.user_id = u.id
     """
-    curs.execute(sql)
-    rows = curs.fetchall()
+    cursor.execute(sql)
+    rows = cursor.fetchall()
 
 
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
     db.commit()
-    db.close()
+    # db.close()
     return json_str, 200
 
 
@@ -190,4 +229,5 @@ def feed_get():
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
+
 
