@@ -1,3 +1,10 @@
+$(document).ready(function () {
+    const login_id = window.location.search
+    console.log(window.location.href)
+    // my_feed(login_id);
+});
+
+
 
     function my_feed() {
 

@@ -63,11 +63,12 @@ def main():
         user_id = None
         return render_template('main.html', logininfo=user_id)
 
-@app.route('/mypage')
-def mypage():
-    if 'login_id' in session:
-        user_id = session['login_id']
-        return render_template('mypage.html', logininfo=user_id)
+
+
+@app.route('/login_try')
+def login_try():
+    return render_template("login_try.html")
+
 
 @app.route('/write')
 def write():
@@ -161,6 +162,31 @@ def user_edit():
             return render_template('login_error.html')
     else:
         return render_template('user_edit.html')
+
+
+@app.route('/<login_id>')
+def mypages():
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('mypage.html', logininfo = user_id)
+
+@app.route("/<login_id>", methods=['GET'])
+def mypage(login_id):
+     # 여기 foreign key 방식으로 다시 써야됨!!!!
+     sql = """
+     select *
+     from feed as f
+     LEFT JOIN `user` as u
+     ON f.user_id = u.id
+     """
+     cursor.execute(sql)
+     rows = cursor.fetchall()
+
+
+     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+     db.commit()
+     # db.close()
+     return json_str, 200
 
 @app.route('/edit_success')
 def edit_success():

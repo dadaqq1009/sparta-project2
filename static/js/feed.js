@@ -23,25 +23,43 @@ function get_feed() {
                 let description = data[i][2]
                 let created_at = data[i][3]
                 let image = data[i][4].substring(1)
-                let user_id = data[i][7]
+                let login_id = data[i][7]
 
 
-                let temp_html = `<article class="feed">
-                                  <img src=${image} alt="" />
-                                  <div class="feed_text_wrap">
-                                    <h4 class="feed_title">${title}</h4>
-                                    <p class="feed_descript">
-                                      ${description}
-                                    </p>
-                                  </div>
-                                  <div class="feed_user">
-                                    <p class="feed_user_id">${user_id}<span>${created_at}</span></p>
-                                  </div>
-                                </article>`
+                let temp_html = `
+                    <a href="/feed_page?${login_id}?${id}">
+<!--                    <a href="/feed_page?login_id=${login_id}?id=${id}">-->
+                        <article class="feed">
+                          <img src=${image} alt="" />
+                          <div class="feed_text_wrap">
+                            <h4 class="feed_title">${title}</h4>
+                            <p class="feed_descript">
+                              ${description}
+                            </p>
+                          </div>
+                          <div class="feed_user">
+                            <p class="feed_user_id">${login_id}<span>${created_at}</span></p>
+                          </div>
+                        </article>
+                    </a>`
                 $('#container').prepend(temp_html)
-                console.log(user_id)
             }
         }
     });
 }
+
+
+
+
+// function  delete_feed(id) {
+//     $.ajax({
+//         type: 'POST',
+//         url: '/tguestBook/delete',
+//         data: {cnt_give: cnt},
+//         success: function (response) {
+//             alert(response['msg'])
+//             window.location.reload()
+//         }
+//     })
+// }
 

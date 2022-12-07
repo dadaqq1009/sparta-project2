@@ -19,6 +19,7 @@ h1 {
     color: var(--point-color);
     font-weight: 600;
     font-size: 26px;
+    cursor: pointer;
 }
 
 .status {
