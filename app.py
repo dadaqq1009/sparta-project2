@@ -8,7 +8,7 @@ app.secret_key = 'abcdefg'
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
-                     passwd = 'Guswl1219',
+                     passwd = '1234',
                      db = 'mapaltofu',
                      charset = 'utf8')
 
@@ -47,19 +47,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 ##################################
-# bcrypt = Bcrypt(app)
-
+bcrypt = Bcrypt(app)
 ##################################
-
-
-# def connectSql():
-#     db = pymysql.connect(host='localhost', port=3306, user='root',
-#                          passwd='1234', db='mapaltofu', charset='utf8')
-#     return db
-
-# db = pymysql.connect(host='localhost', port=3306, user='root',
-#                      passwd='1234', db='mapaltofu', charset='utf8')
-
 
 @app.route('/')
 def main():
@@ -72,14 +61,11 @@ def main():
         return render_template('main.html', logininfo=user_id)
 
 
+
 @app.route('/login_try')
 def login_try():
     return render_template("login_try.html")
 
-
-# @app.route('/mypage')
-# def mypage():
-#     return render_template('mypage.html')
 
 @app.route('/write')
 def write():
@@ -99,7 +85,6 @@ def login():
 
         cursor.execute(sql, value)
         data = cursor.fetchall()
-        # db.close()
 
         if data:
             session['login_id'] = user_id
@@ -116,7 +101,6 @@ def logout():
     session.pop('login_id', None)
     return redirect(url_for('main'))
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -127,19 +111,21 @@ def register():
 
         cursor = db.cursor()
 
-        sql = "select * from `user` where login_id = %s"
-        value = user_id
+        sql = "select * from `user` where login_id = %s or email = %s"
+        value = (user_id, user_email)
         cursor.execute(sql, value)
-        data = cursor.fetchall()
+        data = (cursor.fetchall())
+
+
 
         if data:
-            return render_template('register.html')
+            return render_template('login_error.html')
         else:
             sql = "insert into `user` (login_id, pw, name, email) values (%s,%s,%s,%s)"
             value = (user_id, user_pw, user_name, user_email)
             cursor.execute(sql, value)
+            # bcrypt.generate_password_hash(user_pw)
             cursor.fetchall()
-
             db.commit()
             # db.close()
             return render_template('main.html')
@@ -147,7 +133,6 @@ def register():
         return render_template('register.html')
 
 @app.route('/user_edit', methods=['GET', 'POST'])
-            # 회원정보 업데이트 공사중 입니다
 def user_edit():
     if request.method == 'POST':
         if 'login_id' in session:
@@ -158,18 +143,23 @@ def user_edit():
             edit_email = request.form['edit_email']
 
             cursor = db.cursor()
-            sql = "update `user` set name = %s, pw = %s, email = %s"
-            value = (edit_name, edit_pw, edit_email)
+            sql = "update `user` set name = %s, pw = %s, email = %s where login_id = %s"
+            value = (edit_name, edit_pw, edit_email, login_id)
+
+            # sql = "update `user` set name = %s, pw = %s, email = %s"
+            # value = (edit_name, edit_pw, edit_email)
             cursor.execute(sql, value)
 
             session['login_id'] = login_id
 
             db.commit()
-            return render_template('main.html', logininfo=login_id )
+            # db.close()
+            return render_template('edit_success.html', logininfo=login_id )
         else:
-            return render_template('user_edit.html')
+            return render_template('login_error.html')
     else:
         return render_template('user_edit.html')
+
 
 @app.route('/<login_id>')
 def mypages():
@@ -179,6 +169,32 @@ def mypages():
 
 @app.route("/<login_id>", methods=['GET'])
 def mypage(login_id):
+     # 여기 foreign key 방식으로 다시 써야됨!!!!
+     sql = """
+     select *
+     from feed as f
+     LEFT JOIN `user` as u
+     ON f.user_id = u.id
+     """
+     cursor.execute(sql)
+     rows = cursor.fetchall()
+
+
+     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+     db.commit()
+     # db.close()
+     return json_str, 200
+
+@app.route('/edit_success')
+def edit_success():
+    return render_template('edit_success.html')
+
+
+@app.route("/api/mypages", methods=['GET'])
+def feed_get():
+    # curs = db.cursor()
+    # 여기 foreign key 방식으로 다시 써야됨!!!!
+
     sql = """
     select * 
     from feed as f
@@ -190,6 +206,7 @@ def mypage(login_id):
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
     db.commit()
     return json_str, 200
+
 
 # @app.route("/api/mypages", methods=['GET'])
 # def feed_get():
@@ -231,6 +248,7 @@ def feed_page(login_id, id):
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
     db.commit()
     return json_str, 200
+
 
 
 if __name__ == '__main__':
