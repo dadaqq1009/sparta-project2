@@ -11,7 +11,7 @@ app.secret_key = 'abcdefg'
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
-                     passwd = '1234',
+                     passwd = 'xK7C8r9nJF',
                      db = 'mapaltofu',
                      charset = 'utf8')
 
@@ -167,30 +167,72 @@ def edit_success():
     return render_template('edit_success.html')
 
 
-@app.route("/api/mypages", methods=['GET'])
+@app.route("/api/mypages", methods=['GET', 'POST'])
 def feed_get():
-    # curs = db.cursor()
-    # 여기 foreign key 방식으로 다시 써야됨!!!!
-    sql = """
-    select * 
-    from feed as f
-    LEFT JOIN `user` as u
-    ON f.user_id = u.id
-    """
-    cursor.execute(sql)
-    rows = cursor.fetchall()
+    if request.method == "GET":
+        # curs = db.cursor()
+        # 여기 foreign key 방식으로 다시 써야됨!!!!
+        sql = """
+        select * 
+        from feed as f
+        LEFT JOIN `user` as u
+        ON f.user_id = u.id
+        """
+        cursor.execute(sql)
+        rows = cursor.fetchall()
 
 
-    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
-    db.commit()
-    # db.close()
-    return json_str, 200
+        json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+        db.commit()
+        # db.close()
+        return json_str, 200
 
-@app.route("/modify", methods=['GET','PUT','DELETE'])
+    elif request.method == "POST":
+        feed_id = request.form['id']
+        print(feed_id)
+        sql = """
+                DELETE FROM feed WHERE id = %s;
+                            """
+
+        value = feed_id
+        cursor.execute(sql, value)
+
+        db.commit()
+
+        return json.dumps('post deleted successfully!')
+
+@app.route("/modify")
 def modify_feed():
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('modify.html', logininfo=user_id)
+
+@app.route("/api/modify", methods=['POST'])
+def edit_feed():
+    if request.method == "POST":
+        feed_id = request.form['id']
+        title = request.form['title']
+        description = request.form['description']
+        print(feed_id, title, description)
+
+        sql = """
+                    UPDATE feed
+                    SET title = %s,
+                     description = %s
+                     WHERE id = %s;
+                    """
+
+        value = (title, description, feed_id)
+
+        cursor.execute(sql, value)
+
+        db.commit()
+
+        return json.dumps('post modified successfully!')
 
 
-    return render_template('modify.html')
+
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

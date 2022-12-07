@@ -1,32 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>write page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-
-    <title>modify</title>
+     <script src="/static/js/mypage.js"></script>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li>접속자 : <strong>{{logininfo}}</strong> 님</li>
+                    <li id="edit_id" name="edit_id" style="display: none"></li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">새 글 작성</h3>
+        </div>
+        <section>
 
+                <fieldset>
+                <!-- 헤더 -->
+                    <legend>여긴 제목이야</legend>
+                <!--제목-->
+                    <div class="form-group">
+                        <label class="col-md-12" for="txtTitle" >Title </label>
+                        <div class="col-md-12">
+                            <!--required : 공백입력시 경고-->
+                             <textarea class="form-control" name="edit_title" id="edit_title" placeholder="Leave a comment here", autofocus required></textarea>
+                        </div>
+                    </div>
+                <!-- Textarea -->
+                    <div class="form-group">
+                        <label class="col-md-12" for="txtPost">Post</label>
+                        <div class="col-md-12">
+                            <textarea class="form-control" id="edit_description" name="edit_description" placeholder="내용을 입력하세요." style="height:260px;" required></textarea>
+                        </div>
+                    </div>
+                <!-- Button -->
+                    <button onclick="putFeed()">수정하기</button>
+                    <button>삭제하기</button>
 
+                    </fieldset>
 
-                <div class="form-floating">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
-                  style="height: 100px">ㅇㅇㅇ</textarea>
-                </div>
-                <div class="form-floating">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
-                  style="height: 100px">ㅇㅇㅇ</textarea>
-                </div>
-
-                <button type="button" class="btn btn-dark" style="margin-top: 20px;" onclick="modify()">수정하기</button>
-                <button type="button" class="btn btn-dark" style="margin-top: 20px;" onclick="modify()">삭제하기</button>
-
-            </div>
-
-
+        </section>
+    </div>
 </body>
+<script>
+    $(document).ready(function () {
+        my_feed();
+    });
+        open_modify();
+</script>
 </html>
