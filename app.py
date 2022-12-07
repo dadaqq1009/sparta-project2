@@ -11,7 +11,7 @@ app.secret_key = 'abcdefg'
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
-                     passwd = 'xK7C8r9nJF',
+                     passwd = '',
                      db = 'mapaltofu',
                      charset = 'utf8')
 
