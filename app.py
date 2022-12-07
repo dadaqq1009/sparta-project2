@@ -189,7 +189,6 @@ def feed_get():
 
     elif request.method == "POST":
         feed_id = request.form['id']
-        print(feed_id)
         sql = """
                 DELETE FROM feed WHERE id = %s;
                             """
@@ -213,7 +212,6 @@ def edit_feed():
         feed_id = request.form['id']
         title = request.form['title']
         description = request.form['description']
-        print(feed_id, title, description)
 
         sql = """
                     UPDATE feed

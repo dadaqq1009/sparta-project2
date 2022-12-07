@@ -84,13 +84,13 @@ function delete_feed(id){
             window.location.href='/mypage'
         }
     });
-    console.log(id)
+
 }
 
 function deleteFeed() {
         const f_id = localStorage.getItem('feed_id')
         delete_feed(f_id)
-    console.log(f_id)
+
         }
 
 //modify 페이지
@@ -111,9 +111,8 @@ function modify_feed(data){
             window.location.href='/mypage'
         }
     });
-    console.log(data)
-}
 
+}
 
 
 function putFeed() {
@@ -121,7 +120,6 @@ function putFeed() {
         const f_title = $("#edit_title").val();
         const f_description = $("#edit_description").val();
         modify_feed({id: f_id, title: f_title, description: f_description})
-    // console.log(f_id, f_title, f_description)
         }
 
 
