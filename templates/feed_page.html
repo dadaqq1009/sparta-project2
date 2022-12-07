@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-
-    <title>mypages</title>
+    <title>상세페이지</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,36 +12,17 @@
     <link rel="stylesheet" href="../static/css/reset.css" />
     <link rel="stylesheet" href="../static/css/header.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="../static/js/feed_page.js"></script>
     <script src="../static/js/header.js"></script>
-    <script src="../static/js/mypage.js"></script>
-    <!-- <style>
-    body {
-        background-color: #495057;
-        background-position: center;
-        background-size: auto;
-    }
-
-    .card {
-        margin: 20px 30px;
-
-    }
-    img {
-        width: 200px;
-        height: 200px;
-    }
-</style> -->
-
 </head>
-
 <body>
-<header>
+    <header>
       <div class="header_wrap">
         <h1 onclick="location.href='/'">Ma8Tofu</h1>
       {% if logininfo %}
         <div class="status guest">{{logininfo}}</div>
         <ul class="status_box">
-          <a class="box_list" href="/?"
+          <a class="box_list" href="/?{{logininfo}}"
             ><li class="status_mypage">마이페이지</li></a
           >
           <a class="box_list" href="/write"
@@ -62,21 +39,9 @@
         <div class="status guest" onclick="location.href='/login'">Login</div>
 
       {% endif %}
-
     </header>
-<section id="section">
-    <table id="content">
-{#        <div class="card mb-3" id="feed-box">#}
-{#            <img src=" /static/images/mycat.jpg" class="card-img-top" alt="image">#}
-{#            <div class="card-body">#}
-{#                <h5 class="card-title">title</h5>#}
-{#                {% for value in feed_list %}#}
-{#                <p class="card-text">{{value}}</p>#}
-{#                {% endfor %}#}
-{#                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>#}
-{#            </div>#}
-{#        </div>#}
-    </table>
-</section>
+<div id="feed_page">
+</div>
+
 </body>
 </html>

@@ -1,9 +1,6 @@
-from flask import Flask, render_template, request, session, url_for, redirect, flash
+from flask import Flask, render_template, request, session, url_for, redirect, flash, jsonify
 # from flask_bcrypt import Bcrypt
 import pymysql, logging, json
-
-from flask_bcrypt import Bcrypt
-
 
 app = Flask(__name__)
 app.secret_key = 'abcdefg'
@@ -25,38 +22,10 @@ def get_feed():
     """
     cursor.execute(sql)
     rows = cursor.fetchall() # 피드에있는 데이터를 다 가져온다
-    print(rows)
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str) # json포맷으로 변환
     db.commit()
     return json_str, 200
 
-#     print('get_feed')
-#     title_receive = request.args.get('title_give')
-#     return jsonify({'result':'success', 'msg': '이 요청은 GET!'})
-# cursor.execute('select * from feed;')
-# value = cursor.fetchall()
-# print([value[3]['image']])
-
-# # print([value[0]['title']])
-# # # 마지막에 이게 꼭 나와야함
-
-
-
-# DEBUG -> INFO -> WARNING -> ERROR -> Critical
-# # 파일로 남기기 위해서는 filename='test.log' 파라미터, 어느 로그까지 남길 것인지를 level 설정 가능하다.
-# logging.basicConfig(filename='test.log', level=logging.ERROR)
-#
-# # 로그를 남길 부분에 다음과 같이 로그 레벨에 맞추어 출력해주면 해당 내용이 파일에 들어감
-# # logging.debug("debug")
-# # logging.info("info")
-# # logging.warning("warning@@@@@@@@@@@@@@@@")
-# logging.error("error############")
-# logging.critical("critical$$$$$$$$$$$$")
-
-
-# handler = logging.FileHandler('flask_error.log') # 메인파일 기준에서 상대경로 (절대경로로 해도 됨)
-# handler.setLevel(logging.WARNING)  # ERROR 일때만 로깅하게 한다
-# app.logger.addHandler(handler) # 핸들러 세팅
 
 # 로그 생성
 logger = logging.getLogger('loggin msg')
@@ -108,9 +77,9 @@ def login_try():
     return render_template("login_try.html")
 
 
-@app.route('/mypage')
-def mypage():
-    return render_template('mypage.html')
+# @app.route('/mypage')
+# def mypage():
+#     return render_template('mypage.html')
 
 @app.route('/write')
 def write():
@@ -202,13 +171,14 @@ def user_edit():
     else:
         return render_template('user_edit.html')
 
+@app.route('/<login_id>')
+def mypages():
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('mypage.html', logininfo = user_id)
 
-
-@app.route("/api/mypages", methods=['GET'])
-def feed_get():
-    # curs = db.cursor()
-
-    # 여기 foreign key 방식으로 다시 써야됨!!!!
+@app.route("/<login_id>", methods=['GET'])
+def mypage(login_id):
     sql = """
     select * 
     from feed as f
@@ -217,14 +187,50 @@ def feed_get():
     """
     cursor.execute(sql)
     rows = cursor.fetchall()
-
-
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
     db.commit()
-    # db.close()
     return json_str, 200
 
+# @app.route("/api/mypages", methods=['GET'])
+# def feed_get():
+#     # curs = db.cursor()
+#
+#     # 여기 foreign key 방식으로 다시 써야됨!!!!
+#     sql = """
+#     select *
+#     from feed as f
+#     LEFT JOIN `user` as u
+#     ON f.user_id = u.id
+#     """
+#     cursor.execute(sql)
+#     rows = cursor.fetchall()
+#
+#
+#     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+#     db.commit()
+#     # db.close()
+#     return json_str, 200
 
+@app.route('/feed_page')
+def feed_pages():
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('feed_page.html', logininfo = user_id)
+
+@app.route("/feed_page/<login_id>/<id>", methods=["GET"])
+def feed_page(login_id, id):
+
+    sql = """
+    select * 
+    from feed as f
+    LEFT JOIN `user` as u
+    ON f.user_id = u.id
+    """
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+    db.commit()
+    return json_str, 200
 
 
 if __name__ == '__main__':
