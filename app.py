@@ -5,6 +5,10 @@ import pymysql, logging, json
 # from flask_bcrypt import Bcrypt
 
 import bcrypt
+try:
+    from werkzeug.utils import secure_filename
+except:
+    from werkzeug import secure_filename
 
 
 app = Flask(__name__)
@@ -16,6 +20,10 @@ db = pymysql.connect(host = 'localhost',
                      passwd = 'xK7C8r9nJF',
                      db = 'mapaltofu',
                      charset = 'utf8')
+
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 #파일 업로드 용량 제한 단위:바이트 (현재 16메가 세팅)
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:Guswl1219@localhost:3306/mapaltofu"
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 
 # cursor = db.cursor(pymysql.cursors.DictCursor)
 cursor = db.cursor()
@@ -285,45 +293,42 @@ def delete_feed():
 
         return json.dumps('post deleted successfully!')
 
+@app.route('/write_success')
+def write_success():
+    if'login_id' in session:
+        user_id = session['login_id']
+        return render_template('write_success.html', logininfo=user_id)
+
+
 @app.route('/write', methods=['GET','POST'])
 def write():
     if request.method == 'POST':
         if 'login_name' in session:
-
             title = request.form['title']
             description = request.form['description']
-            image = request.form['image']
-            pk_id = session['pk_id']
-
-
-            sql = """INSERT
-                     INTO feed (
-                     title
-                     , description
-                     , image
-                     , user_id 
-                     )
-                     VALUES (
-                     %s
-                     , %s
-                     , %s
-                     , %s
-                        );"""
-            value = (title, description, image, pk_id)
+            file = request.files['file']
+            file.save('./static/images/' + secure_filename(file.filename))
+            image = './static/images/' + file.filename
+            sql = "insert into feed(title, description, image) values (%s, %s, %s)"
+            value = (title, description, image)
             cursor.execute(sql, value)
             db.commit()
 
-            return redirect(url_for('mypage/<login_id>'))
+            return redirect(url_for('write_success'))
         else:
             return render_template('login_error.html')
     else:
         if 'login_name' in session:
             login_id = session['login_id']
             login_name = session['login_name']
-
             return render_template('write.html', logininfo=login_id, loginName=login_name)
         else:
             return render_template('main.html')
+
+
+
+
+
 
 
 

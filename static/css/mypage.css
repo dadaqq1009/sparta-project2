@@ -1,0 +1,46 @@
+    #container {
+    width: 1200px;
+    margin: 30px auto;
+}
+
+
+
+.card >img {
+    width: 85%;
+    height: 90%;
+    max-height: 360px;
+
+}
+a {
+    color: #41464b;
+    text-decoration: none;
+}
+.card{
+    align-items: center;
+}
+
+
+.card-body {
+    width: 100%;
+    height: 45%;
+    padding: 14px;
+
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 7px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.card-text {
+    font-weight: 200;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
