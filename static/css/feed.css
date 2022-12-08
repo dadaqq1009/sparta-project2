@@ -50,3 +50,9 @@
     border-top: 1px solid #999;
     padding: 0 14px;
 }
+
+.feed_created {
+    margin-left: 135px;
+    color: #969696;
+    font-size: 12px;
+}

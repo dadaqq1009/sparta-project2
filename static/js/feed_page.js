@@ -1,6 +1,7 @@
 $(document).ready(function () {
-    const login_id = window.location.search.split("?")[1]
-    const id = window.location.search.split("?")[2]
+    let a = window.location.search.split("=")[1].split("&")
+    const login_id = a[0]
+    const id = a[1]
 
     feed_page(login_id, id)
 });
@@ -15,7 +16,6 @@ function feed_page(login_id, id) {
         success: function (data) {
 
             for (let i = 0; i < data.length; i++) {
-                console.log(login_id, id, data[i][0])
                 if (id == data[i][0]) {
                     let id = data[i][0]
                     let title = data[i][1]

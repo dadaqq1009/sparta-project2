@@ -1,19 +1,25 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash, jsonify
-# from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt
 import pymysql, logging, json
+try:
+    from werkzeug.utils import secure_filename
+except:
+    from werkzeug import secure_filename
+
 
 app = Flask(__name__)
 app.secret_key = 'abcdefg'
 
-db = pymysql.connect(host = 'localhost',
-                     port = 3306,
-                     user = 'root',
-                     passwd = 'Guswl1219',
-                     db = 'mapaltofu',
-                     charset = 'utf8')
+db = pymysql.connect(host='localhost',
+                     port=3306,
+                     user='root',
+                     passwd='Guswl1219',
+                     db='mapaltofu',
+                     charset='utf8')
 
 # cursor = db.cursor(pymysql.cursors.DictCursor)
 cursor = db.cursor()
+
 
 @app.route('/feed', methods=['GET'])
 def get_feed():
@@ -21,8 +27,8 @@ def get_feed():
     select * from feed as f left join `user` as u on f.user_id = u.id
     """
     cursor.execute(sql)
-    rows = cursor.fetchall() # 피드에있는 데이터를 다 가져온다
-    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str) # json포맷으로 변환
+    rows = cursor.fetchall()  # 피드에있는 데이터를 다 가져온다
+    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)  # json포맷으로 변환
     db.commit()
     return json_str, 200
 
@@ -46,20 +52,10 @@ file_handler = logging.FileHandler('my.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
+
 ##################################
 # bcrypt = Bcrypt(app)
-
 ##################################
-
-
-# def connectSql():
-#     db = pymysql.connect(host='localhost', port=3306, user='root',
-#                          passwd='1234', db='mapaltofu', charset='utf8')
-#     return db
-
-# db = pymysql.connect(host='localhost', port=3306, user='root',
-#                      passwd='1234', db='mapaltofu', charset='utf8')
-
 
 @app.route('/')
 def main():
@@ -76,10 +72,6 @@ def main():
 def login_try():
     return render_template("login_try.html")
 
-
-# @app.route('/mypage')
-# def mypage():
-#     return render_template('mypage.html')
 
 @app.route('/write')
 def write():
@@ -99,7 +91,6 @@ def login():
 
         cursor.execute(sql, value)
         data = cursor.fetchall()
-        # db.close()
 
         if data:
             session['login_id'] = user_id
@@ -127,27 +118,27 @@ def register():
 
         cursor = db.cursor()
 
-        sql = "select * from `user` where login_id = %s"
-        value = user_id
+        sql = "select * from `user` where login_id = %s or email = %s"
+        value = (user_id, user_email)
         cursor.execute(sql, value)
-        data = cursor.fetchall()
+        data = (cursor.fetchall())
 
         if data:
-            return render_template('register.html')
+            return render_template('login_error.html')
         else:
             sql = "insert into `user` (login_id, pw, name, email) values (%s,%s,%s,%s)"
             value = (user_id, user_pw, user_name, user_email)
             cursor.execute(sql, value)
+            # bcrypt.generate_password_hash(user_pw)
             cursor.fetchall()
-
             db.commit()
             # db.close()
             return render_template('main.html')
     else:
         return render_template('register.html')
 
+
 @app.route('/user_edit', methods=['GET', 'POST'])
-            # 회원정보 업데이트 공사중 입니다
 def user_edit():
     if request.method == 'POST':
         if 'login_id' in session:
@@ -158,44 +149,60 @@ def user_edit():
             edit_email = request.form['edit_email']
 
             cursor = db.cursor()
-            sql = "update `user` set name = %s, pw = %s, email = %s"
-            value = (edit_name, edit_pw, edit_email)
+            sql = "update `user` set name = %s, pw = %s, email = %s where login_id = %s"
+            value = (edit_name, edit_pw, edit_email, login_id)
+
+            # sql = "update `user` set name = %s, pw = %s, email = %s"
+            # value = (edit_name, edit_pw, edit_email)
             cursor.execute(sql, value)
 
             session['login_id'] = login_id
 
             db.commit()
-            return render_template('main.html', logininfo=login_id )
+            # db.close()
+            return render_template('edit_success.html', logininfo=login_id)
         else:
-            return render_template('user_edit.html')
+            return render_template('login_error.html')
     else:
         return render_template('user_edit.html')
 
-@app.route('/<login_id>')
-def mypages():
+
+# @app.route('/mypage/<login_id>')
+# def mypages():
+#     if 'login_id' in session:
+#         user_id = session['login_id']
+#         return render_template('mypage.html', logininfo = user_id)
+
+@app.route("/mypage/<login_id>", methods=['GET'])
+def mypage(login_id):
+    print("hello")
     if 'login_id' in session:
         user_id = session['login_id']
-        return render_template('mypage.html', logininfo = user_id)
+        return render_template('mypage.html', logininfo=user_id)
 
-@app.route("/<login_id>", methods=['GET'])
-def mypage(login_id):
     sql = """
-    select * 
-    from feed as f
-    LEFT JOIN `user` as u
-    ON f.user_id = u.id
-    """
+        select *
+        from feed as f
+        LEFT JOIN `user` as u
+        ON f.user_id = u.id
+        """
     cursor.execute(sql)
     rows = cursor.fetchall()
     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
     db.commit()
     return json_str, 200
 
+
+@app.route('/edit_success')
+def edit_success():
+    return render_template('edit_success.html')
+
+
 # @app.route("/api/mypages", methods=['GET'])
 # def feed_get():
 #     # curs = db.cursor()
-#
 #     # 여기 foreign key 방식으로 다시 써야됨!!!!
+#
 #     sql = """
 #     select *
 #     from feed as f
@@ -204,22 +211,21 @@ def mypage(login_id):
 #     """
 #     cursor.execute(sql)
 #     rows = cursor.fetchall()
-#
-#
 #     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
 #     db.commit()
-#     # db.close()
 #     return json_str, 200
+
 
 @app.route('/feed_page')
 def feed_pages():
     if 'login_id' in session:
         user_id = session['login_id']
-        return render_template('feed_page.html', logininfo = user_id)
+        return render_template('feed_page.html', logininfo=user_id)
+    return render_template('feed_page.html')
+
 
 @app.route("/feed_page/<login_id>/<id>", methods=["GET"])
 def feed_page(login_id, id):
-
     sql = """
     select * 
     from feed as f
@@ -233,7 +239,35 @@ def feed_page(login_id, id):
     return json_str, 200
 
 
+# @@ 이미지 업로드
+
+# app.config['MAX_CONTENT_LENGTH'] = 6 * 1024 * 1024 #파일 업로드 용량 제한 단위:바이트 (현재 6메가 세팅)
+
+# 파일 리스트
+# @app.route('/list')
+# def list_page():
+#     file_list = os.listdir("./uploads")
+#     html = """<center><a href="/">홈페이지</a><br><br>"""
+#     html += "file_list: {}".format(file_list) + "</center>"
+#     return html
+
+
+# 업로드 HTML 렌더링
+@app.route('/upload')
+def upload_page():
+    return render_template('upload.html')
+
+
+# 파일 업로드 처리
+@app.route('/fileUpload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['file']
+        # 저장할 경로 + 파일명
+        f.save('./static/images/' + secure_filename(f.filename))
+        return render_template('main.html') # 이부분 수정
+
+
+
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
-
-

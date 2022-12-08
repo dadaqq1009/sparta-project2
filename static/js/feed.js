@@ -27,8 +27,7 @@ function get_feed() {
 
 
                 let temp_html = `
-                    <a href="/feed_page?${login_id}?${id}">
-<!--                    <a href="/feed_page?login_id=${login_id}?id=${id}">-->
+                    <a href="/feed_page?login_id=${login_id}&${id}">
                         <article class="feed">
                           <img src=${image} alt="" />
                           <div class="feed_text_wrap">
@@ -38,7 +37,7 @@ function get_feed() {
                             </p>
                           </div>
                           <div class="feed_user">
-                            <p class="feed_user_id">${login_id}<span>${created_at}</span></p>
+                            <p class="feed_user_id">${login_id}<span class="feed_created">${created_at}</span></p>
                           </div>
                         </article>
                     </a>`

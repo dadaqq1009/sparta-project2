@@ -1,6 +1,6 @@
 $(document).ready(function () {
     const login_id = window.location.search
-    console.log(window.location.href)
+    console.log(window.location.search)
     // my_feed(login_id);
 });
 
