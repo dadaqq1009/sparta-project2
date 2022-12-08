@@ -15,6 +15,7 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (data) {
             for (let i = 0; i < data.length; i++) {
+
                 let id = data[i][0]
                 let title = data[i][1]
                 let description = data[i][2]
@@ -33,6 +34,7 @@ $(document).ready(function () {
                             </div>
                          </div>
                         `
+
                 if (login_id == feed_login_id){
                     $('#container').prepend(temp_html)
                 }

@@ -15,19 +15,14 @@ function feed_page(login_id, id) {
         success: function (data) {
 
             for (let i = 0; i < data.length; i++) {
-                console.log(login_id, id, data[i][0])
+                console.log(login_id, id, data[i][0], data[i][7])
                 if (id == data[i][0]) {
                     let id = data[i][0]
                     let title = data[i][1]
                     let description = data[i][2]
                     let time = data[i][3]
                     let image = data[i][4].substring(1)
-                    let login_id = data[i][7]
-
-                    // {% if logininfo == ${login_id} %}
-                    //     <a type="button" onclick="open_modify()" href="/modify" class="hiddenbutton" id="editbutton">수정하기</a>
-                    //     <button  type="button" onclick="deleteFeed()" class="hiddenbutton" id="deletebutton">삭제하기</button>
-                    // {% endif %}
+                    let feed_login_id = data[i][7]
 
                     let temp_html = `
                         <div class="card mb-3" id="feed-box">
@@ -37,13 +32,17 @@ function feed_page(login_id, id) {
                                 <p class="card-text" id="cardText">${description}</p>
                                 <p class="card-text">${time}<small class="text-muted" id="cardTime"></small></p>
                                 <button onclick="close_feed()" type="button" id="backbutton">Back</button>
-                                <a type="button" onclick="open_modify()" href="/modify" class="hiddenbutton" id="editbutton">수정하기</a>
-                                <button  type="button" onclick="deleteFeed()" class="hiddenbutton" id="deletebutton">삭제하기</button>
-                                                     
+                                 <a href="/modify">
+                                <button type="button" onclick="open_modify()" class="hiddenbutton" id="editbutton">수정하기</button>
+                                </a>
+                                <button  type="button" onclick="deleteFeed()" class="hiddenbutton" id="deletebutton">삭제하기</button>             
                             </div>
-                         </div>`
+                         </div>
+                        `
+
                     open_feed(id, title, description)
                     $('#feed_page').append(temp_html)
+
                     return
                 }
             }

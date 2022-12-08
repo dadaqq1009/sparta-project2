@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
-# from flask_bcrypt import Bcrypt
+
 import pymysql, logging, json
 
-from flask_bcrypt import Bcrypt
+# from flask_bcrypt import Bcrypt
+
+import bcrypt
 
 
 app = Flask(__name__)
@@ -30,39 +32,39 @@ def get_feed():
     return json_str, 200
 
 
-# # 로그 생성
-# logger = logging.getLogger('loggin msg')
-#
-# # 로그의 출력 기준 설정
-# logger.setLevel(logging.INFO)
-#
-# # log 출력 형식
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#
-# # log 출력
-# stream_handler = logging.StreamHandler()
-# stream_handler.setFormatter(formatter)
-# logger.addHandler(stream_handler)
-#
-# # log를 파일에 출력
-# file_handler = logging.FileHandler('my.log')
-# file_handler.setFormatter(formatter)
-# logger.addHandler(file_handler)
+# 로그 생성
+logger = logging.getLogger('loggin msg')
+
+# 로그의 출력 기준 설정
+logger.setLevel(logging.INFO)
+
+# log 출력 형식
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# log 출력
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
+
+# log를 파일에 출력
+file_handler = logging.FileHandler('my.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 ##################################
-bcrypt = Bcrypt(app)
+
 ##################################
 
 @app.route('/')
 def main():
     if 'login_id' in session:
         user_id = session['login_id']
+        login_name = session['login_name']
 
-        return render_template('main.html', logininfo=user_id)
+        return render_template('main.html', logininfo=user_id, loginName=login_name)
     else:
         user_id = None
         return render_template('main.html', logininfo=user_id)
-
 
 
 @app.route('/login_try')
@@ -70,9 +72,9 @@ def login_try():
     return render_template("login_try.html")
 
 
-@app.route('/write')
-def write():
-    return render_template('write.html')
+# @app.route('/write')
+# def write():
+#     return render_template('write.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -82,18 +84,26 @@ def login():
         user_pw = request.form['login_pw']
 
         cursor = db.cursor()
-
-        sql = "SELECT * FROM `user` WHERE login_id = %s and pw = %s"
-        value = (user_id, user_pw)
-
-        cursor.execute(sql, value)
+        sql = "SELECT * FROM `user` where login_id = %s"
+        cursor.execute(sql, user_id)
         data = cursor.fetchall()
 
+        for row in data:
+            db_pw = row[3]
+            login_name = row[2]
+            print(row)
+
         if data:
-            session['login_id'] = user_id
-            return render_template('main.html', logininfo=user_id)
+            if bcrypt.checkpw(user_pw.encode('utf-8'), db_pw.encode('utf-8')):
+                session['login_id'] = user_id
+                session['login_name'] = login_name
+                return render_template('main.html', logininfo=user_id, loginName=login_name)
+
+            else:
+                logger.info(f'login try fail..')
+                return render_template('login_error.html')
         else:
-            # logger.info(f'login try fail..')
+            logger.info(f'login try fail..')
             return render_template('login_error.html')
     else:
         return render_template('login.html')
@@ -101,33 +111,35 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('login_id', None)
+    session.clear()
     return redirect(url_for('main'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         user_id = request.form['register_id']
+
         user_pw = request.form['register_pw']
+        input_bcrypt = bcrypt.hashpw(user_pw.encode('utf-8'), bcrypt.gensalt())
+        input_decode = input_bcrypt.decode('utf-8')
+
         user_name = request.form['register_name']
         user_email = request.form['register_email']
 
         cursor = db.cursor()
 
-        sql = "select * from `user` where login_id = %s or email = %s"
+        sql = "select * from `user` where login_id = %s and email = %s"
         value = (user_id, user_email)
         cursor.execute(sql, value)
         data = (cursor.fetchall())
 
-
-
         if data:
-            return render_template('login_error.html')
+            logger.info(f'sigin try fail..')
+            return render_template('register.html')
         else:
             sql = "insert into `user` (login_id, pw, name, email) values (%s,%s,%s,%s)"
-            value = (user_id, user_pw, user_name, user_email)
+            value = (user_id, input_decode, user_name, user_email)
             cursor.execute(sql, value)
-            # bcrypt.generate_password_hash(user_pw)
             cursor.fetchall()
             db.commit()
             # db.close()
@@ -143,14 +155,15 @@ def user_edit():
 
             edit_name = request.form['edit_name']
             edit_pw = request.form['edit_pw']
+            input_bcrypt = bcrypt.hashpw(edit_pw.encode('utf-8'), bcrypt.gensalt())
+            input_decode = input_bcrypt.decode('utf-8')
+
             edit_email = request.form['edit_email']
 
             cursor = db.cursor()
             sql = "update `user` set name = %s, pw = %s, email = %s where login_id = %s"
-            value = (edit_name, edit_pw, edit_email, login_id)
+            value = (edit_name, input_decode, edit_email, login_id)
 
-            # sql = "update `user` set name = %s, pw = %s, email = %s"
-            # value = (edit_name, edit_pw, edit_email)
             cursor.execute(sql, value)
 
             session['login_id'] = login_id
@@ -159,19 +172,21 @@ def user_edit():
             # db.close()
             return render_template('edit_success.html', logininfo=login_id )
         else:
+            logger.info(f'user_edit fail..')
             return render_template('login_error.html')
     else:
         return render_template('user_edit.html')
 
 
-@app.route("/mypage")
-def mypages():
+@app.route('/mypage')
+def mypage():
     if 'login_id' in session:
         user_id = session['login_id']
-        return render_template('mypage.html', logininfo = user_id)
+        login_name = session['login_name']
+        return render_template('mypage.html', logininfo=user_id, loginName=login_name)
 
 @app.route("/api/mypage", methods=['GET'])
-def mypage():
+def mypages():
     if request.method == "GET":
         # curs = db.cursor()
         # 여기 foreign key 방식으로 다시 써야됨!!!!
@@ -201,7 +216,8 @@ def edit_success():
 def modify_feed():
     if 'login_id' in session:
         user_id = session['login_id']
-        return render_template('modify.html', logininfo=user_id)
+        login_name = session['login_name']
+        return render_template('modify.html', logininfo=user_id, loginName=login_name)
 
 @app.route("/api/modify", methods=['POST'])
 def edit_feed():
@@ -261,6 +277,33 @@ def delete_feed():
         db.commit()
 
         return json.dumps('post deleted successfully!')
+
+@app.route('/write', methods=['GET','POST'])
+def write():
+    if request.method == 'POST':
+        if 'login_name' in session:
+
+            title = request.form['title']
+            description = request.form['description']
+            image = request.form['image']
+            login_id = request.form['id']
+
+
+            sql = "insert into feed(title, description, image) values (%s, %s, %s)"
+            value = (title, description, image)
+            cursor.execute(sql, value)
+            db.commit()
+
+            return redirect(url_for('mypage'))
+        else:
+            return render_template('login_error.html')
+    else:
+        if 'login_name' in session:
+            login_id = session['login_id']
+            login_name = session['login_name']
+            return render_template('write.html', logininfo=login_id, loginName=login_name)
+        else:
+            return render_template('main.html')
 
 
 
