@@ -67,11 +67,6 @@ def main():
         user_id = None
         return render_template('main.html', logininfo=user_id)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 2e1b6f25ed5ad3b7c0362c9d8cb4814115308a9a
-
 @app.route('/login_try')
 def login_try():
     return render_template("login_try.html")
@@ -170,9 +165,6 @@ def user_edit():
     else:
         return render_template('user_edit.html')
 
-<<<<<<< HEAD
-=======
-
 @app.route('/<login_id>')
 def mypages():
     if 'login_id' in session:
@@ -200,27 +192,18 @@ def mypage(login_id):
 @app.route('/edit_success')
 def edit_success():
     return render_template('edit_success.html')
->>>>>>> 2e1b6f25ed5ad3b7c0362c9d8cb4814115308a9a
 
-# @app.route('/mypage/<login_id>')
-# def mypages():
-#     if 'login_id' in session:
-#         user_id = session['login_id']
-#         return render_template('mypage.html', logininfo = user_id)
 
-<<<<<<< HEAD
 @app.route("/mypage/<login_id>", methods=['GET'])
 def mypage(login_id):
     print("hello")
     if 'login_id' in session:
         user_id = session['login_id']
         return render_template('mypage.html', logininfo=user_id)
-=======
+
 @app.route("/api/mypages", methods=['GET'])
 def feed_get():
-    # curs = db.cursor()
-    # 여기 foreign key 방식으로 다시 써야됨!!!!
->>>>>>> 2e1b6f25ed5ad3b7c0362c9d8cb4814115308a9a
+
 
     sql = """
         select *
@@ -235,30 +218,9 @@ def feed_get():
     return json_str, 200
 
 
-<<<<<<< HEAD
 @app.route('/edit_success')
 def edit_success():
     return render_template('edit_success.html')
-
-
-=======
->>>>>>> 2e1b6f25ed5ad3b7c0362c9d8cb4814115308a9a
-# @app.route("/api/mypages", methods=['GET'])
-# def feed_get():
-#     # curs = db.cursor()
-#     # 여기 foreign key 방식으로 다시 써야됨!!!!
-#
-#     sql = """
-#     select *
-#     from feed as f
-#     LEFT JOIN `user` as u
-#     ON f.user_id = u.id
-#     """
-#     cursor.execute(sql)
-#     rows = cursor.fetchall()
-#     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
-#     db.commit()
-#     return json_str, 200
 
 
 @app.route('/feed_page')
@@ -284,7 +246,6 @@ def feed_page(login_id, id):
     return json_str, 200
 
 
-<<<<<<< HEAD
 # @@ 이미지 업로드
 
 # app.config['MAX_CONTENT_LENGTH'] = 6 * 1024 * 1024 #파일 업로드 용량 제한 단위:바이트 (현재 6메가 세팅)
@@ -314,8 +275,6 @@ def upload_file():
         return render_template('main.html') # 이부분 수정
 
 
-=======
->>>>>>> 2e1b6f25ed5ad3b7c0362c9d8cb4814115308a9a
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
