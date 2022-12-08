@@ -1,0 +1,22 @@
+2022-12-08 23:44:05,365 - loggin msg - INFO - login try fail..
+2022-12-09 00:23:49,420 - loggin msg - INFO - login..
+2022-12-09 00:23:53,219 - loggin msg - INFO - login..
+2022-12-09 00:23:53,595 - loggin msg - INFO - login try fail..
+2022-12-09 00:23:54,551 - loggin msg - INFO - login..
+2022-12-09 04:07:09,626 - Failed msg - INFO - user_info_write_Failed..
+
+
+
+2022-12-09 04:12:24,128 - Failed msg - INFO - session if Failed..
+2022-12-09 04:12:29,886 - Failed msg - INFO - request.method in
+2022-12-09 04:12:29,896 - Failed msg - INFO - session if ..in
+
+
+
+
+
+
+
+2022-12-09 04:21:34,440 - Failed msg - INFO - request.method else : session ok ..
+2022-12-09 04:21:41,785 - Failed msg - INFO - request.method in
+2022-12-09 04:21:41,793 - Failed msg - INFO - request.method in : session  ..ok
