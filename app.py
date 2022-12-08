@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql, logging, json, uuid, os
 import bcrypt
+
 try:
     from werkzeug.utils import secure_filename
 except:
@@ -9,15 +10,20 @@ except:
 app = Flask(__name__)
 app.secret_key = 'abcdefg'
 
+
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
                      passwd = 'Guswl1219',
                      db = 'mapaltofu',
                      charset = 'utf8')
+# db = SQLAlchemy(app)
 
 # cursor = db.cursor(pymysql.cursors.DictCursor)
 cursor = db.cursor()
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 #파일 업로드 용량 제한 단위:바이트 (현재 16메가 세팅)
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:Guswl1219@localhost:3306/mapaltofu"
+app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 
 @app.route('/feed', methods=['GET'])
 def get_feed():
@@ -280,17 +286,20 @@ def write_success():
         user_id = session['login_id']
         return render_template('write_success.html', logininfo=user_id)
 
+# def render_picture(data):
+#
+#     render_pic = base64.b64encode(data).decode('ascii')
+#     return render_pic
+
 @app.route('/write', methods=['GET','POST'])
 def write():
     if request.method == 'POST':
         if 'login_name' in session:
-
             title = request.form['title']
             description = request.form['description']
             file = request.files['file']
-            image = file.filename
-            # image = request.form['image']
-
+            file.save('./static/images/' + secure_filename(file.filename))
+            image = './static/images/' + file.filename
             sql = "insert into feed(title, description, image) values (%s, %s, %s)"
             value = (title, description, image)
             cursor.execute(sql, value)
@@ -307,9 +316,6 @@ def write():
         else:
             return render_template('main.html')
 
-# @@ 이미지 업로드
-
-# app.config['MAX_CONTENT_LENGTH'] = 6 * 1024 * 1024 #파일 업로드 용량 제한 단위:바이트 (현재 6메가 세팅)
 
 # 파일 리스트
 # @app.route('/list')
@@ -331,7 +337,7 @@ def upload_page():
 def upload_file():
     if request.method == 'POST':
         f = request.files['file']
-        hash_value = uuid.uuid4().hex
+        # hash_value = uuid.uuid4().hex
         # 저장할 경로 + 파일명
         # f.save(os.path.join(app.config['UPLOAD_FOLDER'], hash_value + secure_filename(f.filename)))
         f.save('./static/images/' + secure_filename(f.filename))

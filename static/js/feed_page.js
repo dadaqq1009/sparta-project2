@@ -1,8 +1,7 @@
 $(document).ready(function () {
-    let a = window.location.search.split("=")[1].split("&")
-    const login_id = a[0]
-    const id = a[1]
-
+    let a = window.location.search.split("=")
+    const login_id = a[1].split('&')[0]
+    const id = a[2]
     feed_page(login_id, id)
 });
 
@@ -16,7 +15,7 @@ function feed_page(login_id, id) {
         success: function (data) {
 
             for (let i = 0; i < data.length; i++) {
-                console.log(login_id, id, data[i][0], data[i][7])
+                console.log(login_id, id)
                 if (id == data[i][0]) {
                     let id = data[i][0]
                     let title = data[i][1]
@@ -26,6 +25,7 @@ function feed_page(login_id, id) {
                     let feed_login_id = data[i][7]
 
                     let temp_html = `
+                        
                         <div class="card mb-3" id="feed-box">
                             <img src=${image} class="card-img-top" alt="image">
                             <div class="card-body">
