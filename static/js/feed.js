@@ -27,7 +27,7 @@ function get_feed() {
 
 
                 let temp_html = `
-                    <a href="/feed_page?${login_id}?${id}">
+                    <a href="/feed_page?login_id=${login_id}&id=${id}">
 <!--                    <a href="/feed_page?login_id=${login_id}?id=${id}">-->
                         <article class="feed">
                           <img src=${image} alt="" />

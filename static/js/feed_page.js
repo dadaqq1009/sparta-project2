@@ -1,7 +1,7 @@
 $(document).ready(function () {
-    const login_id = window.location.search.split("?")[1]
-    const id = window.location.search.split("?")[2]
-
+    let a = window.location.search.split("=")
+    const login_id = a[1].split('&')[0]
+    const id = a[2]
     feed_page(login_id, id)
 });
 
@@ -24,6 +24,13 @@ function feed_page(login_id, id) {
                     let image = data[i][4].substring(1)
                     let feed_login_id = data[i][7]
 
+                    let temp_b = `
+                        <a href="/modify">
+                                <button type="button" onclick="open_modify()" class="hiddenbutton" id="editbutton">수정하기</button>
+                                </a>
+                                <button  type="button" onclick="deleteFeed()" class="hiddenbutton" id="deletebutton">삭제하기</button>
+                    `
+
                     let temp_html = `
                         <div class="card mb-3" id="feed-box">
                             <img src=${image} class="card-img-top" alt="image">
@@ -31,17 +38,17 @@ function feed_page(login_id, id) {
                                 <h5 class="card-title" id="cardTitle">${title}</h5>
                                 <p class="card-text" id="cardText">${description}</p>
                                 <p class="card-text">${time}<small class="text-muted" id="cardTime"></small></p>
-                                <button onclick="close_feed()" type="button" id="backbutton">Back</button>
-                                 <a href="/modify">
-                                <button type="button" onclick="open_modify()" class="hiddenbutton" id="editbutton">수정하기</button>
-                                </a>
-                                <button  type="button" onclick="deleteFeed()" class="hiddenbutton" id="deletebutton">삭제하기</button>             
+                                
+                                              
                             </div>
                          </div>
                         `
 
                     open_feed(id, title, description)
                     $('#feed_page').append(temp_html)
+                    let logininfo = document.getElementById('status_guest').innerText
+                    if (feed_login_id == logininfo) { $('#button_page').append(temp_b )
+                    }
 
                     return
                 }
@@ -49,9 +56,7 @@ function feed_page(login_id, id) {
         }
     });
 }
-//뒤로가기 페이지
-function close_feed(){
-window.history.go(-1) }
+
 
 //수정페이지로 가기 + 수정기능
 
@@ -74,7 +79,9 @@ function modify_feed(data){
         data: {id: id, title: title, description: description},
         success: function(response){
             alert(response)
-            window.history.go(-1)
+            let logininfo = document.getElementById('login_info').innerText
+            window.location.href=`/feed_page?login_id=${logininfo}&id=${id}`
+
         }
     });
 
@@ -96,8 +103,9 @@ function delete_feed(id){
         url: '/api/delete',
         data: {id: id},
         success: function(response){
+            let logininfo = document.getElementById('status_guest').innerText
             alert(response)
-            window.location.href="/"
+            window.location.href=`/mypage?${logininfo}`
         }
     });
 

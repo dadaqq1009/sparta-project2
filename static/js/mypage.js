@@ -24,7 +24,7 @@ $(document).ready(function () {
                 let feed_login_id = data[i][7]
 
                 let temp_html =
-                    `<a href="/feed_page?${feed_login_id}?${id}">
+                    `<a href="/feed_page?login_id=${login_id}&id=${id}">
                          <div class="card mb-3" id="feed-box" onclick="open_feed('${id}','${title}','${description}','${time}')">
                             <img src= ${image} class="card-img-top" alt="image">
                             <div class="card-body">

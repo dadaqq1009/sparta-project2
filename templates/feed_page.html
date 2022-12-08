@@ -20,7 +20,7 @@
       <div class="header_wrap">
         <h1 onclick="location.href='/'">Ma8Tofu</h1>
       {% if logininfo %}
-        <div class="status guest">{{logininfo}}</div>
+        <div class="status guest" id="status_guest">{{logininfo}}</div>
         <ul class="status_box">
           <a class="box_list" href="/mypage?{{logininfo}}"
             ><li class="status_mypage">마이페이지</li></a
@@ -41,6 +41,8 @@
       {% endif %}
     </header>
 <div id="feed_page">
+</div>
+<div id="button_page">
 </div>
 
 </body>

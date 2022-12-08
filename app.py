@@ -247,6 +247,9 @@ def feed_pages():
     if 'login_id' in session:
         user_id = session['login_id']
         return render_template('feed_page.html', logininfo = user_id)
+    else:
+        return render_template('feed_page.html')
+
 
 @app.route("/feed_page/<login_id>/<id>", methods=["GET"])
 def feed_page(login_id, id):
@@ -286,7 +289,7 @@ def write():
             title = request.form['title']
             description = request.form['description']
             image = request.form['image']
-            login_id = request.form['id']
+
 
 
             sql = "insert into feed(title, description, image) values (%s, %s, %s)"
@@ -294,7 +297,7 @@ def write():
             cursor.execute(sql, value)
             db.commit()
 
-            return redirect(url_for('mypage'))
+            return redirect(url_for('mypage/<login_id>'))
         else:
             return render_template('login_error.html')
     else:
@@ -304,9 +307,6 @@ def write():
             return render_template('write.html', logininfo=login_id, loginName=login_name)
         else:
             return render_template('main.html')
-
-
-
 
 
 
