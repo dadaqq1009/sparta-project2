@@ -38,12 +38,7 @@ $(document).ready(function () {
                 if (login_id == feed_login_id){
                     $('#container').prepend(temp_html)
                 }
-
-
-                console.log(image)
-
             }
-
         }
     })}
 

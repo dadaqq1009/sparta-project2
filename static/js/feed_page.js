@@ -1,6 +1,7 @@
 $(document).ready(function () {
-    const login_id = window.location.search.split("?")[1]
-    const id = window.location.search.split("?")[2]
+    let a = window.location.search.split("=")[1].split("&")
+    const login_id = a[0]
+    const id = a[1]
 
     feed_page(login_id, id)
 });

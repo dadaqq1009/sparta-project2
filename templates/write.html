@@ -30,7 +30,7 @@
                         <label class="col-md-12" for="txtTitle">Title </label>
                         <div class="col-md-12">
                             <input id="txtTitle" name="title" type="text" placeholder="제목을 입력하세요." class="form-control input-md", autofocus required><!--required : 공백입력시 경고-->
-                            <input id="imageTitle" name="image" type="text" placeholder="이미지 입력하세요." class="form-control input-de", autofocus required><!--required : 공백입력시 경고-->
+{#                            <input id="imageTitle" name="image" type="text" placeholder="이미지 입력하세요." class="form-control input-de", autofocus required> <!--required : 공백입력시 경고-->#}
                             <li name="id" style="display: none">{{logininfo}}</li>
                         </div>
                     </div>
@@ -41,16 +41,30 @@
                             <textarea class="form-control" id="txtPost" name="description" placeholder="내용을 입력하세요." style="height:260px;" required></textarea>
                         </div>
                     </div>
-                <!-- Button -->
-                    <div class="form-group">
-                        <label class="col-md-12 control-label" for="singlebutton"></label>
-                        <div class="col-md-12">
-                            <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="작성하기">
-                        </div>
-                    </div>
+                    <form action = "/fileUpload" method = "POST" enctype = "multipart/form-data" >
+                        <input type = "file" name = "file" onchange="readURL(this);" />
+                        <img id="img-preview" />
+                        <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="작성하기">
+                    </form>
+
+
+
                 </fieldset>
             </form>
         </section>
     </div>
 </body>
+<script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('img-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            document.getElementById('img-preview').src = "";
+        }
+    }
+</script>
 </html>

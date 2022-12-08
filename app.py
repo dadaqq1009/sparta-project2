@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request, session, url_for, redirect, flash
-
-import pymysql, logging, json
-
-# from flask_bcrypt import Bcrypt
-
+import pymysql, logging, json, uuid, os
 import bcrypt
-
+try:
+    from werkzeug.utils import secure_filename
+except:
+    from werkzeug import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'abcdefg'
@@ -13,7 +12,7 @@ app.secret_key = 'abcdefg'
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
-                     passwd = 'xK7C8r9nJF',
+                     passwd = 'Guswl1219',
                      db = 'mapaltofu',
                      charset = 'utf8')
 
@@ -70,11 +69,6 @@ def main():
 @app.route('/login_try')
 def login_try():
     return render_template("login_try.html")
-
-
-# @app.route('/write')
-# def write():
-#     return render_template('write.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -247,6 +241,8 @@ def feed_pages():
     if 'login_id' in session:
         user_id = session['login_id']
         return render_template('feed_page.html', logininfo = user_id)
+    else:
+        return render_template('feed_page.html')
 
 @app.route("/feed_page/<login_id>/<id>", methods=["GET"])
 def feed_page(login_id, id):
@@ -278,6 +274,12 @@ def delete_feed():
 
         return json.dumps('post deleted successfully!')
 
+@app.route('/write_success')
+def write_success():
+    if'login_id' in session:
+        user_id = session['login_id']
+        return render_template('write_success.html', logininfo=user_id)
+
 @app.route('/write', methods=['GET','POST'])
 def write():
     if request.method == 'POST':
@@ -285,16 +287,16 @@ def write():
 
             title = request.form['title']
             description = request.form['description']
-            image = request.form['image']
-            login_id = request.form['id']
-
+            file = request.files['file']
+            image = file.filename
+            # image = request.form['image']
 
             sql = "insert into feed(title, description, image) values (%s, %s, %s)"
             value = (title, description, image)
             cursor.execute(sql, value)
             db.commit()
 
-            return redirect(url_for('mypage'))
+            return redirect(url_for('write_success'))
         else:
             return render_template('login_error.html')
     else:
@@ -305,8 +307,35 @@ def write():
         else:
             return render_template('main.html')
 
+# @@ 이미지 업로드
+
+# app.config['MAX_CONTENT_LENGTH'] = 6 * 1024 * 1024 #파일 업로드 용량 제한 단위:바이트 (현재 6메가 세팅)
+
+# 파일 리스트
+# @app.route('/list')
+# def list_page():
+#     file_list = os.listdir("./uploads")
+#     html = """<center><a href="/">홈페이지</a><br><br>"""
+#     html += "file_list: {}".format(file_list) + "</center>"
+#     return html
 
 
+# 업로드 HTML 렌더링
+@app.route('/upload')
+def upload_page():
+    return render_template('upload.html')
+
+
+# 파일 업로드 처리
+@app.route('/fileUpload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['file']
+        hash_value = uuid.uuid4().hex
+        # 저장할 경로 + 파일명
+        # f.save(os.path.join(app.config['UPLOAD_FOLDER'], hash_value + secure_filename(f.filename)))
+        f.save('./static/images/' + secure_filename(f.filename))
+        return redirect(url_for('mypage'))
 
 
 
