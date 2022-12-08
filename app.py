@@ -89,15 +89,19 @@ def login():
         data = cursor.fetchall()
 
         for row in data:
+            pk_id = row[0]
             db_pw = row[3]
             login_name = row[2]
             print(row)
+            print(pk_id)
 
         if data:
             if bcrypt.checkpw(user_pw.encode('utf-8'), db_pw.encode('utf-8')):
+                session['pk_id'] = pk_id
                 session['login_id'] = user_id
                 session['login_name'] = login_name
-                return render_template('main.html', logininfo=user_id, loginName=login_name)
+                print(session['pk_id'])
+                return render_template('main.html', logininfo=user_id, loginName=login_name, pkId = pk_id )
 
             else:
                 logger.info(f'login try fail..')
@@ -289,11 +293,23 @@ def write():
             title = request.form['title']
             description = request.form['description']
             image = request.form['image']
+            pk_id = session['pk_id']
 
 
-
-            sql = "insert into feed(title, description, image) values (%s, %s, %s)"
-            value = (title, description, image)
+            sql = """INSERT
+                     INTO feed (
+                     title
+                     , description
+                     , image
+                     , user_id 
+                     )
+                     VALUES (
+                     %s
+                     , %s
+                     , %s
+                     , %s
+                        );"""
+            value = (title, description, image, pk_id)
             cursor.execute(sql, value)
             db.commit()
 
@@ -304,6 +320,7 @@ def write():
         if 'login_name' in session:
             login_id = session['login_id']
             login_name = session['login_name']
+
             return render_template('write.html', logininfo=login_id, loginName=login_name)
         else:
             return render_template('main.html')
