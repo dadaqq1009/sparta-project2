@@ -11,7 +11,7 @@ app.secret_key = 'abcdefg'
 db = pymysql.connect(host = 'localhost',
                      port = 3306,
                      user = 'root',
-                     passwd = '',
+                     passwd = 'xK7C8r9nJF',
                      db = 'mapaltofu',
                      charset = 'utf8')
 
@@ -164,37 +164,14 @@ def user_edit():
         return render_template('user_edit.html')
 
 
-@app.route('/<login_id>')
+@app.route("/mypage")
 def mypages():
     if 'login_id' in session:
         user_id = session['login_id']
         return render_template('mypage.html', logininfo = user_id)
 
-@app.route("/<login_id>", methods=['GET'])
-def mypage(login_id):
-     # 여기 foreign key 방식으로 다시 써야됨!!!!
-     sql = """
-     select *
-     from feed as f
-     LEFT JOIN `user` as u
-     ON f.user_id = u.id
-     """
-     cursor.execute(sql)
-     rows = cursor.fetchall()
-
-
-     json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
-     db.commit()
-     # db.close()
-     return json_str, 200
-
-@app.route('/edit_success')
-def edit_success():
-    return render_template('edit_success.html')
-
-
-@app.route("/api/mypages", methods=['GET', 'POST'])
-def feed_get():
+@app.route("/api/mypage", methods=['GET'])
+def mypage():
     if request.method == "GET":
         # curs = db.cursor()
         # 여기 foreign key 방식으로 다시 써야됨!!!!
@@ -213,18 +190,12 @@ def feed_get():
         # db.close()
         return json_str, 200
 
-    elif request.method == "POST":
-        feed_id = request.form['id']
-        sql = """
-                DELETE FROM feed WHERE id = %s;
-                            """
 
-        value = feed_id
-        cursor.execute(sql, value)
+@app.route('/edit_success')
+def edit_success():
+    return render_template('edit_success.html')
 
-        db.commit()
 
-        return json.dumps('post deleted successfully!')
 
 @app.route("/modify")
 def modify_feed():
@@ -253,6 +224,44 @@ def edit_feed():
         db.commit()
 
         return json.dumps('post modified successfully!')
+
+
+@app.route('/feed_page')
+def feed_pages():
+    if 'login_id' in session:
+        user_id = session['login_id']
+        return render_template('feed_page.html', logininfo = user_id)
+
+@app.route("/feed_page/<login_id>/<id>", methods=["GET"])
+def feed_page(login_id, id):
+
+    sql = """
+    select * 
+    from feed as f
+    LEFT JOIN `user` as u
+    ON f.user_id = u.id
+    """
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    json_str = json.dumps(rows, indent=4, sort_keys=True, default=str)
+    db.commit()
+    return json_str, 200
+
+@app.route("/api/delete", methods=['POST'])
+def delete_feed():
+    if request.method == "POST":
+        feed_id = request.form['id']
+        sql = """
+                       DELETE FROM feed WHERE id = %s;
+                                   """
+
+        value = feed_id
+        cursor.execute(sql, value)
+
+        db.commit()
+
+        return json.dumps('post deleted successfully!')
+
 
 
 

@@ -51,15 +51,5 @@ function get_feed() {
 
 
 
-// function  delete_feed(id) {
-//     $.ajax({
-//         type: 'POST',
-//         url: '/tguestBook/delete',
-//         data: {cnt_give: cnt},
-//         success: function (response) {
-//             alert(response['msg'])
-//             window.location.reload()
-//         }
-//     })
-// }
+
 
