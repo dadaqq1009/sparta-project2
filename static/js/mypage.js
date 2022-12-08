@@ -1,16 +1,16 @@
 $(document).ready(function () {
-    const login_id = window.location.search
+    const login_id = window.location.search.split("?")[1]
     console.log(window.location.href)
-    // my_feed(login_id);
+    mypage(login_id);
 });
 
 
 
-    function my_feed() {
+    function mypage(login_id) {
 
     $.ajax({
         type: 'GET',
-        url: `/api/mypages`,
+        url: `/api/mypage`,
         data: {},
         dataType: 'json',
         success: function (data) {
@@ -20,9 +20,10 @@ $(document).ready(function () {
                 let description = data[i][2]
                 let time = data[i][3]
                 let image = data[i][4].substring(1)
+                let feed_login_id = data[i][7]
 
                 let temp_html =
-                    `
+                    `<a href="/feed_page?${feed_login_id}?${id}">
                          <div class="card mb-3" id="feed-box" onclick="open_feed('${id}','${title}','${description}','${time}')">
                             <img src= ${image} class="card-img-top" alt="image">
                             <div class="card-body">
@@ -32,8 +33,11 @@ $(document).ready(function () {
                             </div>
                          </div>
                         `
+                if (login_id == feed_login_id){
+                    $('#container').prepend(temp_html)
+                }
 
-                $(`#section`).prepend(temp_html)
+
                 console.log(image)
 
             }
@@ -41,92 +45,5 @@ $(document).ready(function () {
         }
     })}
 
-
-
-//고처야 되는 상세페이지 부분
-
-    let temp_html_feed = `
-    <div className="card mb-3" id="feed-box">
-        <img src="..." className="card-img-top" alt="image">
-            <div className="card-body">
-                <h5 className="card-title" id="cardTitle"></h5>
-                <p className="card-text" id="cardText"></p>
-                <p className="card-text"><small className="text-muted" id="cardTime"></small></p>
-                <button className="btn btn-primary" onClick="close_feed()" id="backButton" role="button">back</button>
-                <a className="btn btn-primary" id="editButton" href="/modify" role="button">edit</a>
-                <button className="btn btn-primary" id="deleteButton" onclick="deleteFeed()" role="button">delete</button>
-            </div>
-    </div>
-    `
-
-let selectedId
-    function open_feed(id, title, description, time) {
-    selectedId = id
-    $('#section').empty()
-    $('#section').append(temp_html_feed)
-        document.getElementById('cardTitle').innerText += title
-        document.getElementById('cardText').innerText += description
-        document.getElementById('cardTime').innerText += time
-        localStorage.setItem('feed_id', id)
-        localStorage.setItem('feed_title', title)
-        localStorage.setItem('feed_description', description)
-        localStorage.setItem('feed_time', time)
-}
-
-
-    function close_feed(){
-    window.location.reload()
-}
-
-//삭제 부분
-
-function delete_feed(id){
-
-    $.ajax({
-        type: 'POST',
-        url: '/api/mypages',
-        data: {id: id},
-        success: function(response){
-            alert(response)
-            window.location.href='/mypage'
-        }
-    });
-
-}
-
-function deleteFeed() {
-        const f_id = localStorage.getItem('feed_id')
-        delete_feed(f_id)
-
-        }
-
-//modify 페이지
-function open_modify(){
-     document.getElementById('edit_id').innerText += localStorage.getItem('feed_id')
-    document.getElementById('edit_title').innerText += localStorage.getItem('feed_title')
-    document.getElementById('edit_description').innerText += localStorage.getItem('feed_description')
-}
-
-function modify_feed(data){
-    const {id, title, description} = data
-    $.ajax({
-        type: 'POST',
-        url: '/api/modify',
-        data: {id: id, title: title, description: description},
-        success: function(response){
-            alert(response)
-            window.location.href='/mypage'
-        }
-    });
-
-}
-
-
-function putFeed() {
-        const f_id = document.getElementById('edit_id').innerText;
-        const f_title = $("#edit_title").val();
-        const f_description = $("#edit_description").val();
-        modify_feed({id: f_id, title: f_title, description: f_description})
-        }
 
 
