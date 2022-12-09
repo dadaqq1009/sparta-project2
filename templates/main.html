@@ -1,54 +1,107 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ma8Tofu</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ma8Tofu</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
       rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../static/css/main.css" />
-    <link rel="stylesheet" href="../static/css/reset.css" />
-    <script src="../static/js/header.js"></script>
-    <script src="../static/js/feed.js"></script>
-  </head>
-  <body>
-    <header>
-      <div class="header_wrap">
-        <h1 onclick="location.href='/'">Ma8Tofu</h1>
-      {% if logininfo %}
-        <div class="status guest">{{loginName}}</div>
-        <ul class="status_box">
-          <a class="box_list" href="/mypage?{{logininfo}}"
-            ><li class="status_mypage">마이페이지</li></a
-          >
-          <a class="box_list" href="/write"
-            ><li class="feed_write">피드 작성</li></a
-          >
-          <a class="box_list" href="/user_edit"
-            ><li class="my_info_edit">회원정보수정</li></a
-          >
-          <a class="box_list" href="/logout">
-            <li class="logout">로그아웃</li></a>
-        </ul>
+  />
+  <link rel="stylesheet" href="../static/css/main.css"/>
+  <link rel="stylesheet" href="../static/css/reset.css"/>
+  <link rel="stylesheet" href="../static/css/login.css"/>
+  <script src="../static/js/header.js"></script>
+  <script src="../static/js/feed.js"></script>
+  <script src="../static/js/login.js"></script>
+</head>
+<body>
+<header>
+  <div class="header_wrap">
+    <h1 onclick="location.href='/'">Ma8Tofu</h1>
+    {% if logininfo %}
+      <div class="status guest">{{ loginName }}</div>
+      <ul class="status_box">
+        <a class="box_list" href="/mypage?{{ logininfo }}"
+        >
+          <li class="status_mypage">마이페이지</li>
+        </a
+        >
+        <a class="box_list" href="/write"
+        >
+          <li class="feed_write">피드 작성</li>
+        </a
+        >
+        <a class="box_list" href="/user_edit"
+        >
+          <li class="my_info_edit">회원정보수정</li>
+        </a
+        >
+        <a class="box_list" href="/logout">
+          <li class="logout">로그아웃</li>
+        </a>
+      </ul>
       </div>
-      {% else %}
-        <div class="status guest" onclick="location.href='/login'">Login</div>
+    {% else %}
+      <div class="status guest">
+        <div class="container">
+          <div class="modal-btn-box">
+            <button type="button" id="modal-open">Login</button>
+          </div>
 
-      {% endif %}
+          <div class="popup-wrap" id="popup">
+            <div class="popup">
+              <div class="popup-head">
+          <span class="head-title">
+            M a 8 T o F u</span>
+              </div>
+              <div class="popup-body">
+                <div class="body-content">
+                  <div class="body-titlebox">
+                    <h1>Welcome</h1>
+                  </div>
+                  <div class="body-contentbox">
+                      <p>
+                      <form method="POST" action="/login">
+                      <div class="input-box">
+                      <input id="username" type="text" name="login_id" placeholder="아이디">
+                          <label for="username">아이디</label>
+                        </p>
+                      </div>
+                      <p>
+                      <div class="input-box">
+                        <input id="password" type="password" name="login_pw" placeholder="비밀번호">
+                        <label for="password">비밀번호</label>
+                      </div>
+                      </p>
+                        <button class="lo-btn" type="submit">로그인</button>
+                </form>
+{#                        <button class="lo-btn" type="submit" onclick="location.href='/register'">회원가입</button>#}
+                  </div>
+                  </div>
+                </div>
+              <div class="popup-foot">
+                <span class="pop-btn confirm" id="confirm"onclick="location.href='/register'" >회원가입</span>
+                <span class="pop-btn close" id="close">창 닫기</span>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    {% endif %}
 
 
-    </header>
+</header>
 
-    <main>
-      <section id="container">
+<main>
+  <section id="container">
 
-      </section>
-    </main>
-  </body>
+  </section>
+</main>
+</body>
 </html>
