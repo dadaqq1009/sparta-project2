@@ -258,7 +258,9 @@ def edit_feed():
 def feed_pages():
     if 'login_id' in session:
         user_id = session['login_id']
-        return render_template('feed_page.html', logininfo = user_id)
+        login_name = session['login_name']
+
+        return render_template('feed_page.html', logininfo = user_id, loginName=login_name)
     else:
         return render_template('feed_page.html')
 
@@ -307,10 +309,11 @@ def write():
             title = request.form['title']
             description = request.form['description']
             file = request.files['file']
+            pk_id = session['pk_id']
             file.save('./static/images/' + secure_filename(file.filename))
             image = './static/images/' + file.filename
-            sql = "insert into feed(title, description, image) values (%s, %s, %s)"
-            value = (title, description, image)
+            sql = "insert into feed(title, description, image, user_id) values (%s, %s, %s, %s)"
+            value = (title, description, image, pk_id)
             cursor.execute(sql, value)
             db.commit()
 
