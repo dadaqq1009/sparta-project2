@@ -80,10 +80,6 @@ def login_try():
     return render_template("login_try.html")
 
 
-# @app.route('/write')
-# def write():
-#     return render_template('write.html')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -200,8 +196,7 @@ def mypage():
 @app.route("/api/mypage", methods=['GET'])
 def mypages():
     if request.method == "GET":
-        # curs = db.cursor()
-        # 여기 foreign key 방식으로 다시 써야됨!!!!
+
         sql = """
         select * 
         from feed as f
