@@ -1,0 +1,30 @@
+#feed-box {
+    width: 720px;
+    margin: 30px auto;
+}
+
+#feed-box > img {
+    width: 100%;
+}
+
+
+.card-body {
+    color: #fff;
+}
+
+#cardTitle {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+#cardText {
+    font-size: 19px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.card-text {
+    font-size: 15px;
+    color: #666;
+}

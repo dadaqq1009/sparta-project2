@@ -1,0 +1,54 @@
+@import url("reset.css");
+@import url("header.css");
+
+#container {
+    width: 1460px;
+    margin: 30px auto;
+    color: #fff;
+}
+
+#container > a > div {
+    width: 49%;
+    height: 480px;
+    float: left;
+    margin: 15px 0.25%;
+    background-color: var(--sub-color-1);
+
+}
+
+.card-img-top {
+    width: 100%;
+    height: 70%;
+}
+
+.text_wrap {
+    position: relative;
+    height: 30%;
+    padding: 10px 14px;
+}
+
+.text_wrap > h5 {
+    font-weight: 600;
+    font-size: 20px;
+    padding-bottom: 5px;
+    color: #fff;
+}
+
+.descript {
+    font-size: 15px;
+    font-weight: 300;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    color: #fff;
+}
+
+.time {
+    position: absolute;
+    bottom: 12px;
+    right: 13px;
+    font-size: 14px;
+    color: #969696;
+}

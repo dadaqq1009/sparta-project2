@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>상세페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../static/css/reset.css" />
+    <link rel="stylesheet" href="../static/css/header.css" />
+    <link rel="stylesheet" href="../static/css/feedpage.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../static/js/feed_page.js"></script>
+    <script src="../static/js/header.js"></script>
+</head>
+<body>
+    <header>
+      <div class="header_wrap">
+        <h1 onclick="location.href='/'">Ma8Tofu</h1>
+      {% if logininfo %}
+        <div class="status guest" >{{loginName}}</div>
+        <div class="status guest" id="status_guest" style="display: none">{{logininfo}}</div>
+        <ul class="status_box">
+          <a class="box_list" href="/mypage?{{logininfo}}"
+            ><li class="status_mypage">마이페이지</li></a
+          >
+          <a class="box_list" href="/write"
+            ><li class="feed_write">피드 작성</li></a
+          >
+          <a class="box_list" href="/user_edit"
+            ><li class="my_info_edit">회원정보수정</li></a
+          >
+          <a class="box_list" href="/logout">
+            <li class="logout">로그아웃</li></a>
+        </ul>
+      </div>
+      {% else %}
+        <div class="status guest" onclick="location.href='/login'">Login</div>
+
+      {% endif %}
+    </header>
+<div id="feed_page">
+</div>
+<div id="button_page">
+</div>
+
+</body>
+</html>

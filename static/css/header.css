@@ -1,0 +1,72 @@
+@import url("_variables.css");
+
+header {
+    height: 66px;
+    border-bottom: 1px solid #969696;
+}
+
+.header_wrap {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 1460px;
+    margin: auto;
+    padding: 8px 32px;
+}
+
+h1 {
+    color: var(--point-color);
+    font-weight: 600;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.status {
+    width: 46px;
+    height: 46px;
+    border-radius: 23px;
+    background-color: var(--point-color);
+    color: var(--main-color);
+    line-height: 42px;
+    padding-left: 4px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.status:hover {
+    cursor: pointer;
+}
+
+.status_box {
+    display: none;
+    position: absolute;
+    top: 66px;
+    right: 0;
+    width: 180px;
+    height: 0;
+    font-size: 20px;
+    font-weight: 500;
+    background-color: #fff;
+    opacity: 0.95;
+    box-shadow: 0 4px 5px 5px #222;
+    overflow: hidden;
+    z-index: 1;
+    padding: 0;
+}
+
+.box_list {
+    display: block;
+    width: 150px;
+    height: 50px;
+    text-align: center;
+    padding-top: 10px;
+    margin: auto;
+    border-bottom: 1px solid var(--main-color);
+    text-decoration: none;
+    color: var(--main-color);
+}
+
+.status_box > a:last-child {
+    border-bottom: none;
+}

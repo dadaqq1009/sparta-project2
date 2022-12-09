@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>write page</title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../static/css/write.css" />
+    <script src="../static/js/header.js"></script>
+    <script src="../static/js/write.js"></script>
+
+
+</head>
+<header>
+      <div class="header_wrap">
+        <h1 onclick="location.href='/'">Ma8Tofu</h1>
+      {% if logininfo %}
+        <div class="status guest">{{loginName}}</div>
+        <ul class="status_box">
+          <a class="box_list" href="/mypage?{{logininfo}}"
+            ><li class="status_mypage">마이페이지</li></a
+          >
+          <a class="box_list" href="/write"
+            ><li class="feed_write">피드 작성</li></a
+          >
+          <a class="box_list" href="/user_edit"
+            ><li class="my_info_edit">회원정보수정</li></a
+          >
+          <a class="box_list" href="/logout">
+            <li class="logout">로그아웃</li></a>
+        </ul>
+      </div>
+      {% else %}
+        <div class="status guest" onclick="location.href='/login'">Login</div>
+
+      {% endif %}
+
+</header>
+<body>
+    <div class="container">
+        <section>
+            <form id="file_form" class="form-horizontal" method="post" action="/write" enctype = "multipart/form-data" >
+                <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-12" for="txtTitle">Title </label>
+                            <div class="col-md-12">
+                                <input id="txtTitle" name="title" type="text" placeholder="제목을 입력하세요." class="form-control input-md w_title", autofocus required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-12" for="txtPost">Post</label>
+                            <div class="col-md-12">
+                                <textarea class="form-control" id="txtPost" name="description" placeholder="내용을 입력하세요." required></textarea>
+                            </div>
+                        </div>
+                        <input onchange="readURL(this)" class="form-control img_wrap" type="file"  name="file" />
+
+
+
+                </fieldset>
+            </form>
+            <img id="test_img" src="" alt="" />
+            <img id="img-preview" src="" alt="" />
+            <button class="btn btn-primary" type="button" onclick="register_click()">작성하기</button>
+        </section>
+    </div>
+</body>
+</html>

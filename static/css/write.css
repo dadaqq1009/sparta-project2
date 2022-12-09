@@ -1,0 +1,88 @@
+@import url("reset.css");
+@import url("header.css");
+
+.container {
+    position: relative;
+    width: 1460px;
+    margin: auto;
+    color: #fff;
+}
+
+label {
+    display: none;
+}
+.form-group {
+    width: 50%;
+    margin-bottom: 10px;
+}
+
+.form-control {
+    background-color: var(--main-color);
+}
+
+.w_title {
+    height: 60px;
+    margin-top: 20px;
+    color: #fff;
+    font-size: 25px;
+}
+
+.w_title::placeholder {
+    font-size: 30px;
+}
+
+#txtPost {
+    height: 630px;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 300;
+}
+
+.w_title {
+    height: 60px;
+    margin-top: 20px;
+}
+
+.w_title::placeholder {
+    font-size: 30px;
+}
+
+#txtPost {
+    height: 630px;
+}
+
+#txtPost::placeholder {
+    font-size: 20px;
+}
+
+.img_wrap {
+    position: absolute;
+    width: 50%;
+    height: 700px;
+    top: 20px;
+    right: 0;
+    padding: 326px 0 0 310px;
+}
+
+.img_wrap input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+}
+
+#img-preview {
+    position: absolute;
+    width: 700px;
+    top: 22px;
+    right: 15px;
+    object-fit: cover;
+    height: 696px;
+    display: none;
+}
+
+.btn {
+    width: 100%;
+}
